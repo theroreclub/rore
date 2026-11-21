@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { Bookmark, ShoppingBag, ZoomIn, ZoomOut } from "lucide-react";
 import { type Product, inr } from "@/lib/catalog";
@@ -24,7 +25,7 @@ export default function ProductDetail({
   return (
     <>
       <div className="piece-crumb">
-        <a href="/#drop">The Drop Room</a>
+        <Link href="/#drop">The Drop Room</Link>
         <span>/</span>
         {product.name}
       </div>

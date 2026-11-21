@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Bookmark } from "lucide-react";
 import { inr, productPath, type Product } from "@/lib/catalog";
 export default function ProductCard({
@@ -13,7 +14,7 @@ export default function ProductCard({
   return (
     <article className="product">
       <div className="product-visual">
-        <a
+        <Link
           className="image-button"
           aria-label={"View " + p.name}
           href={productPath(p)}
@@ -26,7 +27,7 @@ export default function ProductCard({
             unoptimized
           />
           <span className="piece-link-label">View piece</span>
-        </a>
+        </Link>
         <span className="universe-tag">{p.universe}</span>
         <button
           className={"save-button " + (saved ? "is-saved" : "")}
@@ -42,7 +43,7 @@ export default function ProductCard({
           <small>
             {p.kind} / {p.color}
           </small>
-          <a href={productPath(p)}>{p.name}</a>
+          <Link href={productPath(p)}>{p.name}</Link>
         </div>
         <span>{inr(p.price)}</span>
       </div>
