@@ -5,27 +5,34 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import Link from "next/link";
+import { animate, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Header, type HeaderPanel } from "./Header";
 import { Footer } from "./Footer";
 import { ProductSearch } from "./ProductSearch";
 import { sections } from "./Navigation";
-import { BagContents, SavedContents, FieldNote } from "./StorePanels";
+import { BagContents, SavedContents } from "./StorePanels";
 import { PageTransition } from "./PageTransition";
-import type { Product } from "@/lib/catalog";
+import type { CartItem, CartLine, Product } from "@/lib/catalog";
 
-type View = HeaderPanel | "note" | null;
-export type CartItem = { variantId: string; quantity: number };
+// The server and the first hydration render share the same empty bag.
+const subscribeToHydration = () => () => {};
+const clientSnapshot = () => true;
+const serverSnapshot = () => false;
+
+type View = HeaderPanel | null;
 type ShopActions = {
   saved: string[];
   toggleSaved: (id: string) => void;
   addPiece: (variant: string) => void;
-  openNote: () => void;
-  collectionRevision: number;
+  lines: CartLine[];
+  total: number;
+  loaded: boolean;
 };
 const ShopContext = createContext<ShopActions | null>(null);
 export function useShop() {
@@ -56,8 +63,7 @@ export function Storefront({
   products: Product[];
 }) {
   const pathname = usePathname();
-  const [collectionRevision, resetCollection] = useState(0);
-  const reset = () => resetCollection((value) => value + 1);
+  const reduced = useReducedMotion();
   const [view, setView] = useState<View>(null);
   const [bag, setBag] = useState<CartItem[]>([]);
   const [saved, setSaved] = useState<string[]>([]);
@@ -66,7 +72,12 @@ export function Storefront({
   const modal = useRef<HTMLDialogElement>(null);
   const bagKey = "rore-concept-bag-v1";
   const savedKey = "rore-concept-saved-v1";
-  useEffect(() => {
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    clientSnapshot,
+    serverSnapshot,
+  );
+  if (hydrated && !loaded) {
     const oldBag = readStore(bagKey),
       oldSaved = readStore(savedKey);
     if (Array.isArray(oldBag))
@@ -83,7 +94,7 @@ export function Storefront({
     if (Array.isArray(oldSaved))
       setSaved(oldSaved.filter((id) => products.some((p) => p.id === id)));
     setLoaded(true);
-  }, [products]);
+  }
   useEffect(() => {
     if (loaded) {
       saveStore(bagKey, bag);
@@ -92,27 +103,38 @@ export function Storefront({
   }, [bag, saved, loaded]);
   useEffect(() => {
     const el = modal.current;
-    if (view && el && !el.open) el.showModal();
-    if (view === "search") el?.querySelector<HTMLInputElement>("#rc-search")?.focus();
+    if (view && el && !el.open) {
+      el.showModal();
+      if (view === "bag" && !reduced)
+        animate(
+          el,
+          { x: ["100%", "0%"] },
+          { duration: 0.23, ease: [0.22, 1, 0.36, 1] },
+        );
+    }
+    if (view === "search")
+      el?.querySelector<HTMLInputElement>("#rc-search")?.focus();
     if (!view && el?.open) el.close();
     document.body.style.overflow = view ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [view]);
+  }, [view, reduced]);
   const lines = bag.flatMap((line) => {
     const p = products.find((p) =>
       p.variants.some((v) => v.id === line.variantId),
     );
-    return p
-      ? [
-          {
-            ...line,
-            p,
-            label: p.variants.find((v) => v.id === line.variantId)!.label,
-          },
-        ]
-      : [];
+    if (!p) return [];
+    const variant = p.variants.find((v) => v.id === line.variantId)!;
+    return [
+      {
+        ...line,
+        p,
+        label: variant.label,
+        color: variant.color,
+        image: p.colors.find((c) => c.name === variant.color)?.image ?? p.image,
+      },
+    ];
   });
   const quantity = lines.reduce((n, l) => n + l.quantity, 0);
   const total = lines.reduce((n, l) => n + l.quantity * l.p.price, 0);
@@ -122,6 +144,11 @@ export function Storefront({
     );
   }
   function addPiece(variant: string) {
+    if (bag.some((l) => l.variantId === variant && l.quantity >= 99)) {
+      setMessage("The preview limit is 99 per variant.");
+      setView("bag");
+      return;
+    }
     setBag((prev) =>
       prev.some((l) => l.variantId === variant)
         ? prev.map((l) =>
@@ -147,33 +174,26 @@ export function Storefront({
     );
   }
   function closePanel() {
-    const drawer = modal.current;
-    if (
-      view === "bag" &&
-      drawer &&
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      if (drawer.dataset.closing) return;
-      drawer.dataset.closing = "true";
-      drawer
-        .animate(
-          [{ transform: "translateX(0)" }, { transform: "translateX(100%)" }],
-          { duration: 180, easing: "ease-in", fill: "forwards" },
-        )
-        .finished.then((animation) => {
-          drawer.close();
-          animation.cancel();
-          delete drawer.dataset.closing;
+    const el = modal.current;
+    if (view === "bag" && el && !reduced) {
+      if (el.dataset.closing) return;
+      el.dataset.closing = "true";
+      animate(el, { x: "100%" }, { duration: 0.16, ease: "easeIn" }).then(
+        () => {
+          el.close();
+          el.style.transform = "";
+          delete el.dataset.closing;
           setView(null);
-        });
-      return;
-    }
-    setView(null);
+        },
+      );
+    } else setView(null);
   }
 
-  useEffect(() => {
+  const [panelPath, setPanelPath] = useState(pathname);
+  if (panelPath !== pathname) {
+    setPanelPath(pathname);
     setView(null);
-  }, [pathname]);
+  }
   function open(panel: HeaderPanel) {
     setMessage("");
     setView(panel);
@@ -184,19 +204,20 @@ export function Storefront({
         saved,
         toggleSaved,
         addPiece,
-        openNote: () => setView("note"),
-        collectionRevision,
+        lines,
+        total,
+        loaded,
       }}
     >
       <div id="top">
         <a className="skip" href="#page-content">
           Skip to content
         </a>
-        <Header count={quantity} open={open} resetCollection={reset} />
+        <Header count={quantity} open={open} />
         <div id="page-content" tabIndex={-1}>
           <PageTransition>{children}</PageTransition>
         </div>
-        <Footer resetCollection={reset} />
+        <Footer />
         <dialog
           ref={modal}
           className={"panel rc-dialog " + (view === "bag" ? "bag-drawer" : "")}
@@ -218,7 +239,10 @@ export function Storefront({
               <X size={20} />
             </button>
             {view === "search" && (
-              <ProductSearch products={products} close={() => setView(null)} />
+              <ProductSearch
+                products={products.filter((p) => !p.archived)}
+                close={() => setView(null)}
+              />
             )}
             {view === "menu" && (
               <>
@@ -229,7 +253,6 @@ export function Storefront({
                       key={href}
                       href={href}
                       onNavigate={() => {
-                        if (href === "/#drop") reset();
                         setView(null);
                       }}
                     >
@@ -257,11 +280,7 @@ export function Storefront({
                 saved={saved}
                 toggleSaved={toggleSaved}
                 close={() => setView(null)}
-                reset={reset}
               />
-            )}
-            {view === "note" && (
-              <FieldNote products={products} close={() => setView(null)} />
             )}
           </div>
         </dialog>

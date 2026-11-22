@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import DropRoom from "@/components/DropRoom";
-import { conceptCatalog } from "@/lib/catalog";
+import ProductDetail from "@/components/ProductDetail";
+import { conceptCatalog, collection } from "@/lib/catalog";
 
 type Props = { params: Promise<{ slug: string }> };
 export function generateStaticParams() {
@@ -19,5 +19,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 export default async function ProductPage({ params }: Props) {
   const product = findProduct((await params).slug);
-  return <DropRoom products={conceptCatalog} product={product} />;
+  return (
+    <ProductDetail
+      key={product.id}
+      product={product}
+      related={collection
+        .filter((p) => p.id !== product.id)
+        .sort(
+          (a, b) =>
+            Number(b.kind === product.kind) - Number(a.kind === product.kind),
+        )
+        .slice(0, 3)}
+    />
+  );
 }

@@ -1,125 +1,142 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
-import { Bookmark, ShoppingBag, ZoomIn, ZoomOut } from "lucide-react";
-import { type Product, inr } from "@/lib/catalog";
-
+import Link from "next/link";
+import { ShoppingBag, Bookmark, Check } from "lucide-react";
+import { inr, type Product } from "@/lib/catalog";
+import { useShop } from "./layout/Storefront";
+import { Gallery } from "./product/Gallery";
+import { SizeGuide } from "./product/SizeGuide";
+import { ProductGrid } from "./shop/ProductGrid";
 export default function ProductDetail({
   product,
-  saved,
-  onSave,
-  onAdd,
+  related,
 }: {
   product: Product;
-  saved: boolean;
-  onSave: () => void;
-  onAdd: (variant: string) => void;
+  related: Product[];
 }) {
-  const [variant, setVariant] = useState(
-    product.variants.length === 1 ? product.variants[0].id : "",
-  );
+  const { saved, toggleSaved, addPiece } = useShop();
+  const [color, setColor] = useState(product.colors[0]);
+  const [size, setSize] = useState("");
   const [error, setError] = useState("");
-  const [detail, setDetail] = useState(false);
-  const Zoom = detail ? ZoomOut : ZoomIn;
+  if (product.archived)
+    return (
+      <main className="atelier atelier-wrap shop-view">
+        <p className="eyebrow">Archive</p>
+        <h1>{product.name}</h1>
+        <p>{product.description}</p>
+        <Link className="text-link" href="/shop/">
+          Explore the current collection
+        </Link>
+      </main>
+    );
+  const variants = product.variants.filter((v) => v.color === color.name);
+  function add() {
+    const v = variants.find((v) => v.label === size);
+    if (!v) {
+      setError("Choose a size to add this piece.");
+      return;
+    }
+    addPiece(v.id);
+    setError("");
+  }
   return (
-    <>
+    <main className="atelier atelier-wrap product-page">
       <div className="piece-crumb">
-        <Link href="/#drop">The Drop Room</Link>
+        <Link href="/shop/">Collection</Link>
         <span>/</span>
         {product.name}
       </div>
-      <section className="piece-layout" aria-labelledby="piece-title">
-        <div className="piece-photo">
-          <button
-            className={"zoom-photo" + (detail ? " enlarged" : "")}
-            aria-pressed={detail}
-            aria-label={detail ? "Show full piece" : "Zoom in on print"}
-            onClick={() => setDetail(!detail)}
-          >
-            <Image
-              src={"/club-art/" + product.image}
-              alt={product.name + " in " + product.color}
-              width={627}
-              height={627}
-              priority
-              unoptimized
-            />
-            <span className="zoom-label">
-              <Zoom size={18} />
-              {detail ? "Full piece" : "Print detail"}
-            </span>
-          </button>
-        </div>
-        <div className="piece-copy">
-          <div className="section-kicker">
-            <i />
-            {product.universe} / Afterhours
-          </div>
-          <h1 id="piece-title">
-            {product.name}
-            <span>.</span>
-          </h1>
-          <div className="piece-price">
+      <section className="pdp">
+        <Gallery key={color.name} color={color} name={product.name} />
+        <div className="purchase rc-glass">
+          <p className="eyebrow">Afterhours / {product.universe}</p>
+          <h1>{product.name}</h1>
+          <div className="price">
             {inr(product.price)} <small>Preview price</small>
           </div>
-          <p>{product.description}</p>
-          <div className="colour-line">
-            <span>Colour</span>
-            <b>{product.color}</b>
-          </div>
+          <p className="description">{product.description}</p>
           <fieldset>
-            <legend>
-              {product.variants.length > 1 ? "Select size" : "Format"}
-            </legend>
-            <div className="sizes">
-              {product.variants.map((v) => (
+            <legend>Colour · {color.name}</legend>
+            <div className="swatches">
+              {product.colors.map((c) => (
                 <button
-                  key={v.id}
-                  aria-pressed={variant === v.id}
+                  key={c.name}
+                  aria-label={c.name}
+                  aria-pressed={color.name === c.name}
                   onClick={() => {
-                    setVariant(v.id);
+                    setColor(c);
+                    if (
+                      !product.variants.some(
+                        (v) => v.color === c.name && v.label === size,
+                      )
+                    )
+                      setSize("");
                     setError("");
                   }}
                 >
-                  {v.label}
+                  <i style={{ background: c.swatch }} />
+                  {c.name}
                 </button>
               ))}
             </div>
           </fieldset>
-          {error && (
-            <p className="size-error" role="alert">
-              {error}
-            </p>
-          )}
-          <div className="piece-actions">
-            <button
-              className="cta"
-              onClick={() => {
-                if (!variant) {
-                  setError("Choose a size to add this piece.");
-                  return;
-                }
-                onAdd(variant);
-              }}
-            >
-              <ShoppingBag size={18} />
-              Add to preview bag
-            </button>
-            <button
-              className="secondary"
-              aria-pressed={saved}
-              aria-label={saved ? "Unsave this piece" : "Save this piece"}
-              onClick={onSave}
-            >
-              <Bookmark size={18} fill={saved ? "currentColor" : "none"} />
-            </button>
+          <div className="size-line">
+            <span>Size</span>
+            <SizeGuide hoodie={product.kind === "Hoodies"} />
           </div>
-          <small className="concept-note">
-            Concept piece · Ordering opens with the live collection.
+          <fieldset className="sizes">
+            <legend className="sr-only">Select size</legend>
+            {variants.map((v) => (
+              <button
+                key={v.id}
+                aria-pressed={v.label === size}
+                onClick={() => {
+                  setSize(v.label);
+                  setError("");
+                }}
+              >
+                {v.label}
+              </button>
+            ))}
+          </fieldset>
+          <div className="purchase-bar">
+            <p role="status" className="size-status">
+              {error || [color.name, size].filter(Boolean).join(" / ")}
+            </p>
+            <div>
+              <button className="rc-button" onClick={add}>
+                <ShoppingBag size={18} />
+                Add to bag
+              </button>
+              <button
+                className="rc-button"
+                data-tone="quiet"
+                aria-label="Save piece"
+                aria-pressed={saved.includes(product.id)}
+                onClick={() => toggleSaved(product.id)}
+              >
+                {saved.includes(product.id) ? (
+                  <Check size={18} />
+                ) : (
+                  <Bookmark size={18} />
+                )}
+              </button>
+            </div>
+          </div>
+          <small className="media-note">
+            Studio placeholders · garment colours and prints are illustrative.
           </small>
         </div>
       </section>
-    </>
+      <section className="edit-section">
+        <div className="edit-head">
+          <h2>Also in the edit.</h2>
+          <Link href="/shop/" className="text-link">
+            All pieces
+          </Link>
+        </div>
+        <ProductGrid products={related} />
+      </section>
+    </main>
   );
 }

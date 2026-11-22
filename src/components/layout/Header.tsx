@@ -8,21 +8,16 @@ export type HeaderPanel = "menu" | "search" | "saved" | "bag";
 type Props = {
   count: number;
   open: (panel: HeaderPanel) => void;
-  resetCollection: () => void;
 };
 
-export function Header({ count, open, resetCollection }: Props) {
+export function Header({ count, open }: Props) {
   return (
     <header className="rc-header rc-glass">
       <div className="rc-bar">
         <Wordmark />
         <nav className="rc-nav" aria-label="Main navigation">
           {sections.map(({ label, href }) => (
-            <Link
-              key={href}
-              href={href}
-              onNavigate={href === "/#drop" ? resetCollection : undefined}
-            >
+            <Link key={href} href={href}>
               {label}
             </Link>
           ))}

@@ -1,3 +1,5 @@
+"use client";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
@@ -11,8 +13,15 @@ export default function ProductCard({
   saved: boolean;
   onSave: () => void;
 }) {
+  const reducedMotion = useReducedMotion();
   return (
-    <article className="product">
+    <motion.article
+      className="product"
+      initial={reducedMotion ? false : { y: 5, opacity: 0.96 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: reducedMotion ? 0 : 0.28 }}
+    >
       <div className="product-visual">
         <Link
           className="image-button"
@@ -20,7 +29,7 @@ export default function ProductCard({
           href={productPath(p)}
         >
           <Image
-            src={"/club-art/" + p.image}
+            src={p.image}
             alt={p.name + " in " + p.color}
             fill
             sizes="(min-width: 900px) 25vw, 50vw"
@@ -47,6 +56,6 @@ export default function ProductCard({
         </div>
         <span>{inr(p.price)}</span>
       </div>
-    </article>
+    </motion.article>
   );
 }

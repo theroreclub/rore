@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { sections, Wordmark } from "./Navigation";
 
-export function Footer({ resetCollection }: { resetCollection: () => void }) {
+export function Footer() {
   return (
     <footer className="rc-footer">
       <div className="rc-footer-inner">
@@ -11,11 +11,7 @@ export function Footer({ resetCollection }: { resetCollection: () => void }) {
         </div>
         <nav aria-label="Footer navigation">
           {sections.map(({ label, href }) => (
-            <Link
-              key={href}
-              href={href}
-              onNavigate={href === "/#drop" ? resetCollection : undefined}
-            >
+            <Link key={href} href={href}>
               {label}
             </Link>
           ))}

@@ -6,6 +6,7 @@ import { Storefront } from "@/components/layout/Storefront";
 import { conceptCatalog } from "@/lib/catalog";
 import "./globals.css";
 import "./shell.css";
+import "./atelier.css";
 
 export const metadata: Metadata = {
   title: "Rore Club — The Drop Room",

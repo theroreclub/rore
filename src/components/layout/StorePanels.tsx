@@ -1,9 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Check, Minus, Plus, Trash2, X } from "lucide-react";
-import { type Product, inr, productPath } from "@/lib/catalog";
-import type { CartItem } from "./Storefront";
-const art = (name: string) => "/club-art/" + name;
+import { type CartLine, type Product, inr, productPath } from "@/lib/catalog";
 export function BagContents({
   lines,
   total,
@@ -11,7 +9,7 @@ export function BagContents({
   changeQuantity,
   close,
 }: {
-  lines: (CartItem & { p: Product; label: string })[];
+  lines: CartLine[];
   total: number;
   message: string;
   changeQuantity: (id: string, delta: number) => void;
@@ -36,7 +34,7 @@ export function BagContents({
             {lines.map((l) => (
               <div className="line" key={l.variantId}>
                 <Image
-                  src={art(l.p.image)}
+                  src={l.image}
                   alt=""
                   width={74}
                   height={74}
@@ -51,7 +49,7 @@ export function BagContents({
                     {l.p.name}
                   </Link>
                   <small>
-                    {l.p.color} / {l.label}
+                    {l.color} / {l.label}
                   </small>
                   <div className="qty">
                     <button
@@ -98,7 +96,12 @@ export function BagContents({
           edit.
         </p>
       )}
-      <button className="cta drawer-continue" onClick={close}>
+      {lines.length > 0 && (
+        <Link href="/checkout/" className="rc-button" onNavigate={close}>
+          Preview checkout
+        </Link>
+      )}
+      <button className="text-link drawer-continue" onClick={close}>
         Continue browsing
       </button>
     </>
@@ -109,13 +112,11 @@ export function SavedContents({
   saved,
   toggleSaved,
   close,
-  reset,
 }: {
   products: Product[];
   saved: string[];
   toggleSaved: (id: string) => void;
   close: () => void;
-  reset: () => void;
 }) {
   return (
     <>
@@ -132,13 +133,7 @@ export function SavedContents({
         .filter((p) => saved.includes(p.id))
         .map((p) => (
           <div className="line" key={p.id}>
-            <Image
-              src={art(p.image)}
-              alt=""
-              width={72}
-              height={72}
-              unoptimized
-            />
+            <Image src={p.image} alt="" width={72} height={72} unoptimized />
             <Link
               onNavigate={close}
               className="saved-name"
@@ -158,59 +153,13 @@ export function SavedContents({
         ))}
       <Link
         className="secondary"
-        href="/#drop"
+        href="/shop/"
         onNavigate={() => {
-          reset();
           close();
         }}
       >
         Browse the drop
       </Link>
-    </>
-  );
-}
-export function FieldNote({
-  products,
-  close,
-}: {
-  products: Product[];
-  close: () => void;
-}) {
-  return (
-    <>
-      <div className="section-kicker">
-        <i /> AFTERHOURS / FIELD NOTE
-      </div>
-      <h2 id="panel-title">
-        Behind the ink<span>.</span>
-      </h2>
-      <Image
-        className="note-art"
-        src={art("afterhours.webp")}
-        alt="The Afterhours dragon illustration"
-        width={650}
-        height={270}
-        unoptimized
-      />
-      <p>
-        Some panels deserve a second look. Afterhours starts with one of those
-        pauses: a hooded figure, an ink-black sky, and a dragon crossing the
-        sun.
-      </p>
-      <p>
-        The red circle holds the composition together. The dragon coils past its
-        edge, just as a character breaks the frame on a manga page. That same
-        contrast carries over to the Sun Dragon Tee.
-      </p>
-      {products[0] && (
-        <Link
-          onNavigate={close}
-          className="cta"
-          href={productPath(products[0])}
-        >
-          See the Sun Dragon Tee
-        </Link>
-      )}
     </>
   );
 }
