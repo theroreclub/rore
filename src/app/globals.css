@@ -1,0 +1,109 @@
+@layer theme, base, storefront, components, utilities;
+@import "tailwindcss";
+@import "./storefront.css" layer(storefront);
+@config "../../tailwind.config.ts";
+
+@layer components {
+  :root {
+    color-scheme: dark;
+    accent-color: var(--rc-accent);
+    --rc-background: #0B0B0D;
+    --rc-surface: #141417;
+    --rc-product-stage: #1D1C1F;
+    --rc-border: #2A2825;
+    --rc-text: #F5F0E6;
+    --rc-muted-text: #8F897C;
+    --rc-accent: #C9A24B;
+    --rc-accent-deep: #8C6B1F;
+    --rc-canvas: var(--rc-background);
+    --rc-muted: var(--rc-muted-text);
+    --rc-line: var(--rc-border);
+    --rc-control-line: var(--rc-muted-text);
+    --rc-stage-glow: radial-gradient(
+      ellipse at 50% 42%,
+      color-mix(in srgb, var(--rc-accent) 16%, transparent) 0%,
+      color-mix(in srgb, var(--rc-accent-deep) 9%, transparent) 46%,
+      transparent 78%
+    );
+    --rc-fast: 160ms;
+    --rc-ease: cubic-bezier(.22, 1, .36, 1);
+
+    /* Existing storefront selectors consume these aliases during migration. */
+    --ink: var(--rc-canvas);
+    --paper: var(--rc-text);
+    --mute: var(--rc-muted);
+    --red: var(--rc-accent);
+    --line: var(--rc-line);
+    --body: var(--font-ui), Arial, sans-serif;
+  }
+
+  body { @apply bg-canvas text-ivory font-sans; line-height: 1.55; }
+  .rc-title, .hero h1, .shell h2, .piece-copy h1, .panel h2 {
+    @apply font-editorial font-normal;
+    letter-spacing: -.035em;
+    line-height: .98;
+    text-wrap: balance;
+  }
+  .rc-title { @apply text-headline; }
+  ::selection { background: var(--rc-accent); color: var(--rc-canvas); }
+  :focus-visible { outline: 2px solid var(--rc-accent); outline-offset: 4px; }
+
+  .rc-glass {
+    background: var(--rc-surface);
+    border: 1px solid var(--rc-line);
+    box-shadow: inset 0 1px color-mix(in srgb, var(--rc-text) 5%, transparent), 0 12px 36px color-mix(in srgb, var(--rc-background) 45%, transparent);
+  }
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .rc-glass {
+      background: color-mix(in srgb, var(--rc-surface) 88%, transparent);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+    }
+  }
+
+  .rc-button, .cta, .secondary {
+    @apply inline-flex items-center justify-center gap-2 font-sans font-semibold;
+    min-height: 2.875rem;
+    padding: .625rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    font-size: .9375rem;
+    background: var(--rc-accent);
+    color: var(--rc-canvas);
+    transition: background-color var(--rc-fast) var(--rc-ease),
+                border-color var(--rc-fast) var(--rc-ease);
+  }
+  .rc-button[data-tone="quiet"], .secondary {
+    color: var(--rc-text); background: transparent; border-color: var(--rc-control-line);
+  }
+  @media (hover: hover) {
+    :is(.rc-button, .cta):not(:disabled):hover {
+      background: var(--rc-text);
+      border-color: transparent;
+    }
+    .rc-button[data-tone="quiet"]:not(:disabled):hover, .secondary:not(:disabled):hover {
+      background: var(--rc-surface); border-color: var(--rc-text);
+    }
+  }
+  .rc-button:disabled { opacity: .45; cursor: not-allowed; }
+
+  .rc-label { display: block; margin-bottom: .5rem; font-size: .875rem; }
+  .rc-input {
+    @apply w-full bg-surface text-ivory font-sans;
+    min-height: 2.875rem;
+    padding: .625rem .875rem;
+    border: 1px solid var(--rc-control-line);
+    border-radius: .25rem;
+    font-size: 1rem;
+  }
+  .rc-input::placeholder { color: var(--rc-muted); opacity: 1; }
+  .rc-input[aria-invalid="true"] { border: 2px dashed var(--rc-accent); }
+  .rc-input:disabled { opacity: .55; cursor: not-allowed; }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .rc-glass { background: var(--rc-surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root { scroll-behavior: auto; --rc-fast: 0ms; }
+  }
+}
