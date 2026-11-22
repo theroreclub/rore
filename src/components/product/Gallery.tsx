@@ -12,7 +12,7 @@ export function Gallery({ color, name }: { color: Colorway; name: string }) {
   return (
     <div className="gallery">
       <button
-        className={"gallery-frame " + (detail ? "detail-crop" : "")}
+        className={"gallery-frame rc-product-stage " + (detail ? "detail-crop" : "")}
         aria-label="Enlarge product image"
         onClick={() => dialog.current?.showModal()}
       >
@@ -36,7 +36,7 @@ export function Gallery({ color, name }: { color: Colorway; name: string }) {
             aria-pressed={detail === Boolean(i)}
             onClick={() => setDetail(Boolean(i))}
           >
-            <span>
+            <span className="rc-product-stage">
               <Image
                 src={i ? color.detail : color.image}
                 alt=""
@@ -64,7 +64,7 @@ export function Gallery({ color, name }: { color: Colorway; name: string }) {
         >
           <X />
         </button>
-        <div className={detail ? "detail-crop" : ""}>
+        <div className={"rc-product-stage" + (detail ? " detail-crop" : "")}>
           <Image width={850} height={850} src={source} alt={alt} unoptimized />
         </div>
       </dialog>

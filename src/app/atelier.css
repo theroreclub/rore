@@ -1,4 +1,43 @@
 @layer components {
+  .rc-product-stage {
+    background-color: var(--rc-product-stage);
+    background-image: var(--rc-stage-glow);
+  }
+  .stage-thumbnail {
+    aspect-ratio: 1;
+    overflow: hidden;
+    flex: none;
+    border-radius: 2px;
+  }
+  .stage-thumbnail img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* These masks fit the four opaque studio placeholders. Transparent catalogue
+     photos with new URLs inherit the same stage without a silhouette mask. */
+  img[src="/atelier/black-tee.webp"] {
+    --garment-mask: url("/atelier/masks/black-tee.svg");
+  }
+  img[src="/atelier/ivory-tee.webp"] {
+    --garment-mask: url("/atelier/masks/ivory-tee.svg");
+  }
+  img[src="/atelier/black-hoodie.webp"] {
+    --garment-mask: url("/atelier/masks/black-hoodie.svg");
+  }
+  img[src="/atelier/grey-hoodie.webp"] {
+    --garment-mask: url("/atelier/masks/grey-hoodie.svg");
+  }
+  .rc-product-stage img {
+    -webkit-mask: var(--garment-mask, none) var(--garment-position, center) / cover no-repeat;
+    mask: var(--garment-mask, none) var(--garment-position, center) / cover no-repeat;
+    mask-mode: alpha;
+  }
+  .category-tile img {
+    --garment-position: center 43%;
+  }
   .atelier-wrap {
     width: min(90%, 84rem);
     margin-inline: auto;
@@ -38,7 +77,7 @@
     align-items: center;
     overflow: hidden;
     min-height: clamp(28rem, 39vw, 40rem);
-    background: #17181b;
+    background: var(--rc-surface);
   }
   .campaign > img {
     object-fit: cover;
@@ -51,8 +90,8 @@
     z-index: -1;
     background: linear-gradient(
       90deg,
-      rgba(14, 15, 16, 0.8),
-      rgba(14, 15, 16, 0.24) 48%,
+      color-mix(in srgb, var(--rc-background) 80%, transparent),
+      color-mix(in srgb, var(--rc-background) 24%, transparent) 48%,
       transparent 75%
     );
   }
@@ -70,7 +109,7 @@
     color: var(--rc-accent);
   }
   .campaign-intro {
-    color: #e1dfda;
+    color: var(--rc-text);
     max-width: 28ch;
     margin-bottom: 1.5rem;
     font-size: 1.05rem;
@@ -96,14 +135,13 @@
   .atelier-grid .product-visual {
     aspect-ratio: 4/4.5;
     border-radius: 1px;
-    background: #bcb8ae;
   }
   .atelier-grid .universe-tag {
     font-family: var(--font-ui);
     letter-spacing: 0.08em;
     font-size: 0.7rem;
-    background: #232323;
-    color: #efede8;
+    background: var(--rc-surface);
+    color: var(--rc-text);
   }
   .atelier-grid .product-info {
     gap: 0.5rem;
@@ -122,7 +160,6 @@
     overflow: hidden;
     aspect-ratio: 2/1;
     padding: 1.4rem;
-    background: #222;
   }
   .category-tile img {
     object-fit: cover;
@@ -133,7 +170,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(0deg, #101113b8, transparent 75%);
+    background: linear-gradient(0deg, color-mix(in srgb, var(--rc-background) 72%, transparent), transparent 75%);
     z-index: -1;
   }
   .category-tile span {
@@ -186,7 +223,7 @@
       min-height: 30rem;
     }
     .campaign-shade {
-      background: linear-gradient(90deg, #0b0c0dc7, #10111316);
+      background: linear-gradient(90deg, color-mix(in srgb, var(--rc-background) 78%, transparent), color-mix(in srgb, var(--rc-background) 9%, transparent));
     }
     .campaign > img {
       object-position: 63% center;
@@ -289,7 +326,6 @@
   }
   .skeleton-piece {
     aspect-ratio: 4/4.5;
-    background: var(--rc-surface);
     border: 1px solid var(--rc-line);
   }
   @media (max-width: 600px) {
@@ -334,9 +370,9 @@
     width: 100%;
     aspect-ratio: 1/1;
     overflow: hidden;
-    background: #b8b5ad;
     cursor: zoom-in;
   }
+  .gallery-tabs img,
   .gallery-frame img {
     object-fit: cover;
   }

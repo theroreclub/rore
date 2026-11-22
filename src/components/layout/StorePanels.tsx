@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { StageThumbnail } from "../StageThumbnail";
 import Link from "next/link";
 import { Check, Minus, Plus, Trash2, X } from "lucide-react";
 import { type CartLine, type Product, inr, productPath } from "@/lib/catalog";
@@ -33,13 +33,7 @@ export function BagContents({
           <div className="bag-list">
             {lines.map((l) => (
               <div className="line" key={l.variantId}>
-                <Image
-                  src={l.image}
-                  alt=""
-                  width={74}
-                  height={74}
-                  unoptimized
-                />
+                <StageThumbnail src={l.image} size={70} />
                 <div className="line-details">
                   <Link
                     onNavigate={close}
@@ -133,7 +127,7 @@ export function SavedContents({
         .filter((p) => saved.includes(p.id))
         .map((p) => (
           <div className="line" key={p.id}>
-            <Image src={p.image} alt="" width={72} height={72} unoptimized />
+            <StageThumbnail src={p.image} size={70} />
             <Link
               onNavigate={close}
               className="saved-name"

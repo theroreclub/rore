@@ -6,13 +6,25 @@
 @layer components {
   :root {
     color-scheme: dark;
-    --rc-canvas: #101113;
-    --rc-surface: #1b1c1f;
-    --rc-text: #f3f0e9;
-    --rc-muted: #b4b1aa;
-    --rc-accent: #d1bc97;
-    --rc-line: rgb(243 240 233 / 15%);
-    --rc-control-line: rgb(243 240 233 / 44%);
+    accent-color: var(--rc-accent);
+    --rc-background: #0B0B0D;
+    --rc-surface: #141417;
+    --rc-product-stage: #1D1C1F;
+    --rc-border: #2A2825;
+    --rc-text: #F5F0E6;
+    --rc-muted-text: #8F897C;
+    --rc-accent: #C9A24B;
+    --rc-accent-deep: #8C6B1F;
+    --rc-canvas: var(--rc-background);
+    --rc-muted: var(--rc-muted-text);
+    --rc-line: var(--rc-border);
+    --rc-control-line: var(--rc-muted-text);
+    --rc-stage-glow: radial-gradient(
+      ellipse at 50% 42%,
+      color-mix(in srgb, var(--rc-accent) 16%, transparent) 0%,
+      color-mix(in srgb, var(--rc-accent-deep) 9%, transparent) 46%,
+      transparent 78%
+    );
     --rc-fast: 160ms;
     --rc-ease: cubic-bezier(.22, 1, .36, 1);
 
@@ -39,11 +51,11 @@
   .rc-glass {
     background: var(--rc-surface);
     border: 1px solid var(--rc-line);
-    box-shadow: inset 0 1px rgb(255 255 255 / 5%), 0 12px 36px rgb(0 0 0 / 20%);
+    box-shadow: inset 0 1px color-mix(in srgb, var(--rc-text) 5%, transparent), 0 12px 36px color-mix(in srgb, var(--rc-background) 45%, transparent);
   }
   @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .rc-glass {
-      background: rgb(27 28 31 / 85%);
+      background: color-mix(in srgb, var(--rc-surface) 88%, transparent);
       -webkit-backdrop-filter: blur(14px);
       backdrop-filter: blur(14px);
     }
@@ -66,7 +78,7 @@
   }
   @media (hover: hover) {
     :is(.rc-button, .cta):not(:disabled):hover {
-      background: color-mix(in srgb, var(--rc-accent) 85%, white);
+      background: var(--rc-text);
       border-color: transparent;
     }
     .rc-button[data-tone="quiet"]:not(:disabled):hover, .secondary:not(:disabled):hover {

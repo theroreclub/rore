@@ -60,7 +60,7 @@ export function Home() {
           <Link
             key={c.cat}
             href={"/shop/?category=" + c.cat}
-            className="category-tile"
+            className="category-tile rc-product-stage"
           >
             {/* CATEGORY IMAGE SLOT: licensed silhouette photograph for each garment category. */}
             <Image

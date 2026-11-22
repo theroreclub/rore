@@ -4,9 +4,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        canvas: "var(--rc-canvas)", surface: "var(--rc-surface)",
-        ivory: "var(--rc-text)", muted: "var(--rc-muted)",
-        champagne: "var(--rc-accent)", hairline: "var(--rc-line)",
+        "background": "var(--rc-background)",
+        "surface": "var(--rc-surface)",
+        "product-stage": "var(--rc-product-stage)",
+        "border": "var(--rc-border)",
+        "text": "var(--rc-text)",
+        "muted-text": "var(--rc-muted-text)",
+        "accent": "var(--rc-accent)",
+        "accent-deep": "var(--rc-accent-deep)",
+        // Aliases used by existing storefront utilities.
+        canvas: "var(--rc-background)",
+        ivory: "var(--rc-text)",
+        muted: "var(--rc-muted-text)",
+        champagne: "var(--rc-accent)",
+        hairline: "var(--rc-border)",
       },
       fontFamily: {
         editorial: ["var(--font-editorial)", "Georgia", "serif"],

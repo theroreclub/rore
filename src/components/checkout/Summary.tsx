@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { StageThumbnail } from "../StageThumbnail";
 import { inr, type CartLine } from "@/lib/catalog";
 export const deliveryFee = 60; // Preview only. Replace with a server-validated shipping quote.
 export function Summary({
@@ -14,7 +14,7 @@ export function Summary({
       <h2>Order summary</h2>
       {lines.map((l) => (
         <div className="summary-piece" key={l.variantId}>
-          <Image src={l.image} alt="" width={60} height={60} unoptimized />
+          <StageThumbnail src={l.image} size={60} />
           <div>
             <strong>{l.p.name}</strong>
             <small>

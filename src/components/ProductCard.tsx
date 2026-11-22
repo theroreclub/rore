@@ -22,7 +22,7 @@ export default function ProductCard({
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: reducedMotion ? 0 : 0.28 }}
     >
-      <div className="product-visual">
+      <div className="product-visual rc-product-stage">
         <Link
           className="image-button"
           aria-label={"View " + p.name}

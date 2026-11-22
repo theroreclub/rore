@@ -32,7 +32,7 @@ export const inr = (amount: number) => "₹" + amount.toLocaleString("en-IN");
 export const productPath = (p: Product) => "/products/" + p.slug + "/";
 
 // IMAGE SLOTS: replace each neutral studio placeholder and detail image (the preview crops the same still) with licensed,
-// color-matched Qikink product photography. Prices and IDs below are preview data.
+// colour-matched garment cutouts with transparent backgrounds and new file names. Prices and IDs below are preview data.
 function color(name: string, swatch: string, file: string): Colorway {
   return {
     name,
@@ -41,10 +41,10 @@ function color(name: string, swatch: string, file: string): Colorway {
     detail: "/atelier/" + file + ".webp",
   };
 }
-const ink = color("Washed black", "#272727", "black-tee"),
-  bone = color("Bone", "#e2d9c7", "ivory-tee");
-const black = color("Ink black", "#222326", "black-hoodie"),
-  grey = color("Charcoal", "#656665", "grey-hoodie");
+const ink = color("Washed black", "var(--rc-product-stage)", "black-tee"),
+  bone = color("Bone", "var(--rc-text)", "ivory-tee");
+const black = color("Ink black", "var(--rc-background)", "black-hoodie"),
+  grey = color("Charcoal", "var(--rc-muted-text)", "grey-hoodie");
 function apparel(
   id: string,
   slug: string,

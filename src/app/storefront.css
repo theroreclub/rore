@@ -30,11 +30,11 @@
   font-display: swap;
 }
 :root {
-  --ink: #111110;
-  --paper: #f5f2e9;
-  --red: #ff5037;
-  --mute: #b5b3ad;
-  --line: #393936;
+  --ink: var(--rc-background);
+  --paper: var(--rc-text);
+  --red: var(--rc-accent);
+  --mute: var(--rc-muted-text);
+  --line: var(--rc-border);
   --display: "Barlow Condensed", "Arial Narrow", sans-serif;
   --body: "DM Sans", Arial, sans-serif;
   --mono: "Space Mono", monospace;
@@ -71,7 +71,7 @@ button:disabled {
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 3px solid #ffa483;
+  outline: 3px solid var(--rc-accent);
   outline-offset: 4px;
 }
 button,
@@ -111,8 +111,8 @@ p {
 header {
   position: relative;
   z-index: 2;
-  background: #10100f;
-  border-bottom: 1px solid #302f2b;
+  background: var(--rc-background);
+  border-bottom: 1px solid var(--rc-border);
 }
 .nav-shell {
   height: 72px;
@@ -152,7 +152,7 @@ nav a {
   position: relative;
   font-size: 0.94rem;
   font-weight: 600;
-  color: #c4c2bc;
+  color: var(--rc-muted-text);
 }
 nav a:hover,
 nav a.active {
@@ -196,7 +196,7 @@ nav a.active:after {
   display: flex;
   align-items: center;
   gap: 9px;
-  border: 1px solid #494843;
+  border: 1px solid var(--rc-border);
   border-radius: 4px;
   padding: 7px 11px;
   font-size: 0.9rem;
@@ -207,7 +207,7 @@ nav a.active:after {
   border-color: var(--paper);
 }
 .bag-button b {
-  background: #30302e;
+  background: var(--rc-product-stage);
   min-width: 19px;
   text-align: center;
   border-radius: 2px;
@@ -220,7 +220,7 @@ nav a.active:after {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: #141310;
+  background: var(--rc-surface);
   min-height: 445px;
   height: clamp(445px, 35vw, 590px);
   display: flex;
@@ -237,8 +237,8 @@ nav a.active:after {
   z-index: -2;
   background: linear-gradient(
     90deg,
-    rgba(13, 13, 12, 0.48),
-    rgba(13, 13, 12, 0.2) 35%,
+    color-mix(in srgb, var(--rc-background) 48%, transparent),
+    color-mix(in srgb, var(--rc-background) 20%, transparent) 35%,
     transparent 62%
   );
 }
@@ -264,10 +264,10 @@ nav a.active:after {
   gap: 9px;
 }
 .flag {
-  color: #e9e3d8;
+  color: var(--rc-text);
 }
 .flag span {
-  color: #9e9b93;
+  color: var(--rc-muted-text);
   padding: 0 1px;
 }
 .flag i,
@@ -289,7 +289,7 @@ nav a.active:after {
   font-style: italic;
 }
 .hero p {
-  color: #dedbd4;
+  color: var(--rc-text);
   font-size: clamp(0.99rem, 1.14vw, 1.16rem);
   line-height: 1.5;
   max-width: 420px;
@@ -307,27 +307,27 @@ nav a.active:after {
   padding: 11px 20px;
 }
 .cta {
-  color: #161410;
+  color: var(--rc-background);
   background: var(--red);
   border: 1px solid var(--red);
 }
 .cta:hover {
-  background: #ff735c;
-  border-color: #ff735c;
+  background: var(--rc-accent);
+  border-color: var(--rc-accent);
 }
 .hero .cta {
   margin-top: 22px;
 }
 .secondary {
-  border: 1px solid #6d6a65;
+  border: 1px solid var(--rc-muted-text);
 }
 .art-caption {
   position: absolute;
   bottom: 20px;
   right: 4.5%;
   padding: 5px 9px;
-  color: #eee8da;
-  background: #141310d9;
+  color: var(--rc-text);
+  background: color-mix(in srgb, var(--rc-surface) 85%, transparent);
   font-size: 0.72rem;
   letter-spacing: 0.12em;
 }
@@ -338,8 +338,8 @@ nav a.active:after {
 .tape {
   overflow: hidden;
   background: var(--red);
-  color: #161310;
-  border-block: 1px solid #171512;
+  color: var(--rc-background);
+  border-block: 1px solid var(--rc-border);
 }
 .tape > div {
   display: flex;
@@ -366,7 +366,7 @@ section[id] {
   padding-block: 47px 40px;
 }
 .section-kicker {
-  color: #c5c2ba;
+  color: var(--rc-muted-text);
   font-size: 0.75rem;
   letter-spacing: 0.12em;
 }
@@ -396,28 +396,28 @@ section[id] {
   gap: 6px;
 }
 .filters svg {
-  color: #aca99e;
+  color: var(--rc-muted-text);
   margin-right: 6px;
 }
 .filters button,
 .world-filter {
   font-size: 0.875rem;
-  border: 1px solid #45443f;
+  border: 1px solid var(--rc-border);
   border-radius: 3px;
   padding: 6px 13px;
   min-height: 35px;
-  color: #d2cfc6;
+  color: var(--rc-text);
   white-space: nowrap;
 }
 .filters button[aria-pressed="true"] {
-  color: #131310;
+  color: var(--rc-background);
   background: var(--paper);
   border-color: var(--paper);
   font-weight: 600;
 }
 .filters button:hover,
 .world-filter:hover {
-  border-color: #a6a49a;
+  border-color: var(--rc-muted-text);
 }
 .world-filter {
   display: flex;
@@ -433,7 +433,7 @@ section[id] {
 .product-visual {
   position: relative;
   aspect-ratio: 1/1;
-  background: #393937;
+  background: var(--rc-product-stage);
   overflow: hidden;
   border-radius: 3px;
 }
@@ -455,8 +455,8 @@ section[id] {
   top: 12px;
   left: 12px;
   pointer-events: none;
-  background: #1b1b19;
-  color: white;
+  background: var(--rc-surface);
+  color: var(--rc-text);
   border-radius: 1px;
   padding: 3px 8px;
   font-size: 0.72rem;
@@ -471,8 +471,8 @@ section[id] {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #f6f3eced;
-  color: #232320;
+  background: color-mix(in srgb, var(--rc-text) 93%, transparent);
+  color: var(--rc-background);
 }
 .save-button:hover,
 .save-button.is-saved {
@@ -507,7 +507,7 @@ section[id] {
 .preview-hint {
   text-transform: none;
   letter-spacing: 0;
-  color: #a9a69f;
+  color: var(--rc-muted-text);
   margin-top: 20px;
 }
 .worlds {
@@ -533,7 +533,7 @@ section[id] {
   overflow: hidden;
   aspect-ratio: 2.4/1;
   padding: 24px;
-  border: 1px solid #3c3b38;
+  border: 1px solid var(--rc-border);
 }
 .world-card img {
   object-fit: cover;
@@ -548,7 +548,7 @@ section[id] {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(90deg, #111c, transparent 90%);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--rc-background) 80%, transparent), transparent 90%);
 }
 .world-card span {
   font: italic 800 clamp(2.4rem, 3.6vw, 4rem)/1 var(--display);
@@ -572,7 +572,7 @@ section[id] {
 }
 .notes p,
 .panel p {
-  color: #c5c2bc;
+  color: var(--rc-muted-text);
 }
 .notes .secondary {
   flex-shrink: 0;
@@ -602,9 +602,9 @@ footer > a:last-child {
   text-underline-offset: 3px;
 }
 .panel {
-  background: #171716;
+  background: var(--rc-surface);
   color: var(--paper);
-  border: 1px solid #48473f;
+  border: 1px solid var(--rc-border);
   border-radius: 6px;
   padding: 0;
   width: min(490px, 94vw);
@@ -612,7 +612,7 @@ footer > a:last-child {
   overscroll-behavior: contain;
 }
 .panel::backdrop {
-  background: #000b;
+  background: color-mix(in srgb, var(--rc-background) 73%, transparent);
   backdrop-filter: blur(4px);
 }
 .panel-content {
@@ -630,7 +630,7 @@ footer > a:last-child {
   right: 9px;
   min-width: 36px;
   min-height: 36px;
-  background: #22221f;
+  background: var(--rc-product-stage);
   border-radius: 50%;
   z-index: 1;
 }
@@ -645,7 +645,7 @@ footer > a:last-child {
   display: flex;
   align-items: center;
   gap: 7px;
-  color: #ffae98;
+  color: var(--rc-accent);
   font-size: 0.9rem;
 }
 .sizes {
@@ -655,7 +655,7 @@ footer > a:last-child {
 }
 .sizes button,
 .qty button {
-  border: 1px solid #5c5953;
+  border: 1px solid var(--rc-border);
   border-radius: 2px;
   padding: 6px 10px;
   min-width: 34px;
@@ -677,12 +677,6 @@ footer > a:last-child {
   gap: 12px;
   border-bottom: 1px solid var(--line);
   padding: 13px 0;
-}
-.line > img {
-  width: 70px;
-  height: 70px;
-  object-fit: cover;
-  border-radius: 2px;
 }
 .qty {
   display: flex;
@@ -762,7 +756,7 @@ footer > a:last-child {
     object-position: 60% center;
   }
   .hero-shade {
-    background: linear-gradient(90deg, #111b, transparent 77%);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--rc-background) 73%, transparent), transparent 77%);
   }
   .product-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -822,11 +816,11 @@ footer > a:last-child {
   .hero-shade {
     background: linear-gradient(
       0deg,
-      #111 0%,
-      #111 15%,
-      #111f 26%,
-      #111d 37%,
-      #1113 67%,
+      var(--rc-background) 0%,
+      var(--rc-background) 15%,
+      var(--rc-background) 26%,
+      color-mix(in srgb, var(--rc-background) 87%, transparent) 37%,
+      color-mix(in srgb, var(--rc-background) 20%, transparent) 67%,
       transparent 90%
     );
   }
@@ -938,7 +932,7 @@ footer > a:last-child {
   .detail-layout > img {
     height: 210px;
     object-fit: contain;
-    background: #c5c3bb;
+    background: var(--rc-product-stage);
   }
   .panel h2 {
     font-size: 2.5rem;
@@ -1043,7 +1037,7 @@ footer .brand-mark {
   margin: auto;
 }
 .piece-photo {
-  background: #b9b3a7;
+  background: var(--rc-product-stage);
   overflow: hidden;
   border-radius: 4px;
 }
@@ -1106,7 +1100,7 @@ footer .brand-mark {
 .piece-copy > p {
   font-size: 1.03rem;
   line-height: 1.58;
-  color: #cecac1;
+  color: var(--rc-muted-text);
   margin: 18px 0 22px;
 }
 .colour-line {
@@ -1150,7 +1144,7 @@ footer .brand-mark {
   margin-top: 12px;
 }
 .piece-copy .size-error {
-  color: #ffaf9e;
+  color: var(--rc-accent);
   margin: 8px 0;
   font-size: 0.93rem;
 }
@@ -1173,7 +1167,7 @@ footer .brand-mark {
   border: 0;
   border-left: 1px solid var(--line);
   border-radius: 0;
-  background: #181816;
+  background: var(--rc-surface);
 }
 .bag-drawer .panel-content {
   display: flex;
@@ -1218,7 +1212,7 @@ footer .brand-mark {
   opacity: 0;
   transform: translateY(5px);
   color: var(--paper);
-  background: #151512;
+  background: var(--rc-background);
   padding: 5px 10px;
   font-size: 0.84rem;
   border-radius: 2px;
