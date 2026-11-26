@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="100%" height="100%">
+  <defs>
+    <linearGradient id="neutral-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141414" />
+      <stop offset="50%" stop-color="#0c0c0c" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+    <radialGradient id="neutral-glow" cx="50%" cy="46%" r="35%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.04" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="600" height="750" fill="url(#neutral-grad)" />
+  <rect width="600" height="750" fill="url(#neutral-glow)" />
+  
+  <!-- Subtle neutral center apparel hanger icon -->
+  <g transform="translate(300, 370)" stroke="rgba(255,255,255,0.20)" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 0 -70 C 0 -95, 28 -95, 28 -110 C 28 -125, -7 -125, -7 -110" />
+    <path d="M -110 30 L 0 -70 L 110 30 Z" />
+    <line x1="-120" y1="34" x2="120" y2="34" stroke="rgba(255,255,255,0.12)" stroke-width="2" />
+  </g>
+</svg>

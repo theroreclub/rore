@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+:root {
+  --store-crimson: #790b13;
+  --store-paper: #fff0dc;
+  --store-ink: #2b0d11;
+  --store-surface: #41151b;
+  --store-raised: #512128;
+  --store-tint: #f1cbbc;
+  --store-muted: #d7b7ab;
+  --store-rule: #ddc5b6;
+  --store-caption: #704a47;
+  --glass-border: #775052;
+}
+
+@theme inline {
+  --color-background: var(--store-ink);
+  --color-background-alt: var(--store-surface);
+  --color-foreground: var(--store-paper);
+  --color-accent: var(--store-tint);
+  --color-accent-hover: var(--store-paper);
+  --color-accent-focus: #fff0dc80;
+  --color-gold: var(--store-tint);
+  --color-text-secondary: var(--store-muted);
+  --color-muted: var(--store-muted);
+  --color-muted-light: var(--store-raised);
+  --color-surface: var(--store-surface);
+  --color-border: var(--glass-border);
+  --color-glass-surface: var(--store-surface);
+  --color-glass-strong: var(--store-raised);
+  --color-glass-border: var(--glass-border);
+
+  /* Keep utility-styled forms, filters and account screens in the store palette. */
+  --color-white: var(--store-paper);
+  --color-black: var(--store-ink);
+  --color-zinc-100: var(--store-paper);
+  --color-zinc-200: #f5decc;
+  --color-zinc-300: #e7cebf;
+  --color-zinc-400: var(--store-muted);
+  --color-zinc-500: #cba89e;
+  --color-zinc-600: #bb9990;
+  --color-zinc-700: #85585a;
+  --color-zinc-800: #654044;
+  --color-zinc-900: var(--store-surface);
+  --color-zinc-950: var(--store-ink);
+  --color-rose-300: #ffcec2;
+  --color-rose-400: #f6b4aa;
+  --color-rose-500: #e99b98;
+  --color-rose-600: var(--store-crimson);
+  --color-rose-800: #9b444b;
+  --color-rose-900: #67232c;
+  --color-rose-950: #4d151b;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* { border-color: var(--glass-border); }
+body {
+  background-color: var(--store-ink);
+  color: var(--store-paper);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--store-crimson); color: var(--store-paper); }
+:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.glass, .glass-strong { background: var(--store-surface); border: 1px solid var(--glass-border); }
+.glass-strong { background: var(--store-raised); }
+
+.store-shell { width: min(100% - 96px, 1296px); margin-inline: auto; }
+.display-type { font-family: var(--font-display), "Arial Narrow", Impact, sans-serif; font-weight: 900; line-height: .9; }
+.store-header { position: sticky; top: 0; z-index: 40; background: var(--store-crimson); border-bottom: 1px solid #fff0dc1c; }
+.header-inner { min-height: 68px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; }
+.store-logo { color: var(--store-paper); font-size: 2rem; display: inline-flex; width: fit-content; gap: .09em; white-space: nowrap; }
+.store-logo i { color: var(--store-tint); font-style: normal; margin-left: -.1em; }
+.store-navigation { display: flex; align-items: center; gap: clamp(18px, 3.1vw, 50px); }
+.store-navigation a { color: var(--store-paper); font-size: .875rem; font-weight: 650; white-space: nowrap; }
+.store-navigation a:hover, .store-footer a:hover { color: var(--store-tint); }
+.header-utilities { justify-self: end; display: flex; align-items: center; gap: 10px; }
+.header-icon { min-width: 38px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: var(--store-paper); cursor: pointer; }
+.header-icon:hover { color: var(--store-tint); }
+.header-icon svg { width: 19px; height: 19px; stroke-width: 1.75; }
+.bag-count { font-size: .75rem; font-weight: 700; }
+.mobile-menu { display: none; }
+.store-dialog { position: fixed; inset: 16vh 16px auto; margin-inline: auto; width: min(100% - 32px, 570px); padding: 23px; background: var(--store-surface); border: 1px solid #fff0dc30; color: var(--store-paper); }
+.store-dialog::backdrop { background: #000b; backdrop-filter: blur(4px); }
+.store-dialog-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 1.125rem; font-weight: 800; }
+.store-dialog form { display: flex; flex-wrap: wrap; gap: 10px; }
+.store-dialog input { flex: 1 1 180px; min-height: 48px; padding: 0 12px; background: var(--store-ink); border: 1px solid #fff0dc30; }
+.store-menu-dialog nav { display: grid; }
+.store-menu-dialog nav a { padding: 12px 0; border-top: 1px solid #fff0dc21; }
+.store-home { background: var(--store-paper); color: var(--store-ink); padding-bottom: 70px; }
+.drop-hero { color: var(--store-paper); min-height: clamp(500px, 43vw, 700px); position: relative; overflow: hidden; isolation: isolate; display: grid; align-items: center; background: var(--store-ink); }
+.drop-hero-image { object-fit: cover; object-position: center 44%; filter: saturate(.72); z-index: -2; }
+.drop-hero-shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, #41090feb, #370b0e84 41%, transparent 68%), linear-gradient(0deg, #290a0b85, transparent 25%); }
+.drop-hero-content { padding-block: 56px 62px; }
+.drop-hero h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(80px, 8.5vw, 138px); font-weight: 400; line-height: .88; letter-spacing: -.065em; margin: 0 0 24px; }
+.drop-hero h1 em { color: var(--store-tint); font-style: italic; }
+.drop-intro { max-width: 365px; color: var(--store-paper); line-height: 1.65; font-size: 1rem; }
+.drop-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 25px; }
+.drop-button { display: inline-flex; min-height: 47px; align-items: center; justify-content: center; padding: 0 19px; border: 1px solid transparent; font-size: .875rem; color: var(--store-paper); font-weight: 800; transition: background-color .2s, border-color .2s; cursor: pointer; }
+.drop-button-primary { color: var(--store-crimson); background-color: var(--store-paper); }
+.drop-button-primary:hover { background-color: var(--store-tint); }
+.drop-button-outline { border-color: #fff0dc99; background: #30091066; }
+.drop-button-outline:hover { border-color: var(--store-paper); background: var(--store-crimson); }
+.store-perks { background: var(--store-surface); border-top: 1px solid #fff0dc14; border-bottom: 1px solid #fff0dc19; }
+.store-perks-inner { display: flex; align-items: center; justify-content: space-between; min-height: 62px; }
+.store-perks-inner span { flex: 1; min-height: 31px; display: flex; align-items: center; justify-content: center; gap: 11px; font-size: .875rem; font-weight: 650; color: var(--store-paper); }
+.store-perks-inner span + span { border-left: 1px solid #fff0dc22; }
+.store-perks svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--store-tint); }
+.store-section { padding-top: 57px; scroll-margin-top: 68px; }
+.store-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 14px; margin-bottom: 23px; }
+.store-section-heading h2 { color: var(--store-crimson); font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: clamp(34px, 3.4vw, 54px); line-height: 1.05; letter-spacing: -.045em; }
+.store-text-link { flex-shrink: 0; padding: 4px 0; border-bottom: 1px solid currentColor; font-size: .875rem; font-weight: 700; }
+.store-section .store-text-link:hover { color: var(--store-crimson); }
+.store-text-link:hover { color: var(--store-tint); }
+.store-home .store-text-link:hover { color: var(--store-crimson); }
+.merch-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 17px; }
+.merch-card { color: var(--store-paper); min-width: 0; display: block; background: var(--store-ink); border: 1px solid #fff0dc20; transition: border-color .2s; }
+.merch-card:hover { border-color: var(--store-tint); }
+.merch-card-image { position: relative; aspect-ratio: 1.04; overflow: hidden; background: var(--store-surface); }
+.merch-card-status { position: absolute; top: 8px; left: 8px; padding: 4px 8px; font-size: .75rem; background: var(--store-ink); }
+.merch-card-body { padding: 13px 14px 17px; }
+.merch-card-body p { color: var(--store-muted); font-size: .75rem; margin-bottom: 4px; }
+.merch-card-body h3 { color: inherit; font-size: .94rem; font-weight: 750; line-height: 1.35; }
+.merch-card-body > span { display: inline-block; margin-top: 8px; color: var(--store-tint); font-size: .9375rem; font-weight: 700; }
+.store-section .merch-card { background: transparent; color: var(--store-ink); border: 0; }
+.store-section .merch-card-body { padding-inline: 0; border-bottom: 1px solid var(--store-rule); }
+.store-section .merch-card-body p { color: var(--store-caption); }
+.store-section .merch-card-body > span { color: var(--store-crimson); font-weight: 550; }
+.store-section .merch-card-status { color: var(--store-paper); }
+.store-section .merch-card:hover h3 { text-decoration: underline; text-underline-offset: .2em; }
+.collection-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 17px; }
+.collection-tile { isolation: isolate; position: relative; min-height: 214px; overflow: hidden; display: flex; align-items: end; padding: 21px; }
+.collection-tile::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg,#300a0de8,transparent 82%); }
+.collection-tile img { object-fit: cover; object-position: 50% 34%; z-index: -2; transition: transform .3s; }
+.collection-tile:hover img { transform: scale(1.05); }
+.collection-tile h3 { color: var(--store-paper); text-transform: uppercase; font-size: clamp(31px, 3vw, 49px); }
+.store-footer { background: var(--store-crimson); color: var(--store-paper); border-top: 1px solid #fff0dc20; padding: 48px 0 18px; }
+.store-footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 24px; padding-bottom: 35px; }
+.store-footer-top p { margin-top: 13px; color: var(--store-muted); }
+.store-footer-top nav { display: grid; align-content: start; gap: 9px; font-size: .875rem; }
+.store-footer-top nav a, .store-copyright { color: var(--store-muted); }
+.store-copyright { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; border-top: 1px solid #fff0dc22; padding-top: 15px; font-size: .8125rem; }
+.privacy-page { background: var(--store-paper); color: var(--store-ink); padding: clamp(42px, 7vw, 96px) 24px; }
+.privacy-page article { max-width: 64ch; margin-inline: auto; }
+.privacy-page h1 { font: 400 clamp(3rem, 7vw, 5.5rem)/1 Georgia, serif; letter-spacing: -.055em; margin-bottom: 24px; }
+.privacy-page h2 { font-size: 1.22rem; font-weight: 650; margin: 30px 0 8px; }
+.privacy-page p { line-height: 1.75; }
+.privacy-page a { color: var(--store-crimson); text-decoration: underline; text-underline-offset: .2em; }
+
+@media (max-width: 900px) {
+  .collection-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .store-shell { width: min(100% - 48px, 1296px); }
+  .header-inner { gap: 14px; }
+  .store-navigation { gap: 16px; }
+}
+@media (max-width: 700px) {
+  .store-shell { width: calc(100% - 32px); }
+  .header-inner { min-height: 55px; }
+  .store-navigation, .header-account { display: none; }
+  .mobile-menu { display: inline-flex; margin-left: -7px; justify-self: start; }
+  .header-utilities { gap: 1px; }
+  .store-logo { font-size: 1.75rem; }
+  .drop-hero { color: var(--store-paper); min-height: 565px; align-items: end; }
+  .drop-hero-image { object-position: 66% center; }
+  .drop-hero-shade { background: linear-gradient(0deg, #320b10 3%, #320b10dd 29%, #320b1028 79%), linear-gradient(90deg,#320b104d,transparent 75%); }
+  .drop-hero-content { padding-block: 26px 34px; }
+  .drop-hero h1 { font-size: clamp(60px, 13vw, 98px); margin-block: 11px 16px; }
+  .drop-actions { margin-top: 19px; gap: 8px; }
+  .drop-button { padding-inline: 12px; }
+  .store-perks-inner { min-height: 73px; }
+  .store-perks-inner span { min-height: 46px; text-align: center; flex-direction: column; gap: 5px; padding-inline: 4px; font-size: .69rem; }
+  .store-perks svg { width: 15px; height: 15px; }
+  .store-section { padding-top: 40px; }
+  .store-section-heading { margin-bottom: 15px; }
+  .merch-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .merch-card-body { padding: 9px 9px 13px; }
+  .collection-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .collection-tile { min-height: 145px; padding: 12px; }
+  .collection-tile h3 { font-size: clamp(22px, 6vw, 31px); }
+  .store-footer-top { grid-template-columns: repeat(2,1fr); }
+  .store-footer-top > div { grid-column: 1 / -1; }
+}

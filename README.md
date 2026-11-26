@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RORE CLUB
 
-## Getting Started
+A Next.js storefront for anime-inspired streetwear and fandom merch. Razorpay captures prepaid INR orders, and Qikink prints and ships products saved in its **My Products** catalog. The storefront ships to Indian addresses.
 
-First, run the development server:
+## Local preview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Install dependencies with `npm ci`, then run `npm run dev` and open [the local storefront](http://localhost:3000). On Windows PowerShell, use `npm.cmd` if script execution is disabled. Without `DATABASE_URL`, the catalog and guest bag use sample products and purchases are disabled. Set `AUTH_SECRET` for Auth.js. In PowerShell, you can set it for the preview session with:
+
+```powershell
+$env:AUTH_SECRET = node -e "process.stdout.write(require('node:crypto').randomBytes(32).toString('base64url'))"
+npm.cmd run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Connect your catalog and checkout
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Keep the migration owner's `DATABASE_URL` in the ignored `.env.migrations.local`. From a shell with no existing `DATABASE_URL`, run `node --env-file=.env.migrations.local node_modules/prisma/build/index.js migrate deploy`. For a new database, create a dedicated login named `rore_store_app` with a generated password and apply `prisma/runtime-access.sql` once as the owner. In the storefront's `.env`, use the dedicated login for `DATABASE_URL` and set `AUTH_SECRET` and `NEXT_PUBLIC_APP_URL`. Use the Supabase session pooler or a direct PostgreSQL connection. Run `npx prisma generate`.
+2. To provision an administrator, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` for the maintenance session and run `node --env-file=.env.migrations.local --import tsx prisma/create-admin.ts`. The storefront login can register customers. If deploying behind a trusted reverse proxy, set `AUTH_CLIENT_IP_HEADER` to a single-IP header the proxy always overwrites and restrict origin access to that proxy. Without this setting, authentication uses a shared source limit alongside its per-email limit.
+3. In [Qikink](https://dashboard.qikink.com/), create products with your print artwork and copy each **My Products** SKU. In **Admin → Products**, add your photos and retail price, then enter each option as `Black / M | YOUR-QIKINK-SKU` in **Qikink product options**. Use one row per size/color combination. For an accessory with one option, enter `One size | YOUR-QIKINK-SKU`. The store uses these mappings and retains its own product names, prices, and images. Unmapped products cannot be purchased.
+4. In **Qikink → Integration → Custom API**, use the sandbox Client ID and Client Secret as `QIKINK_CLIENT_ID` and `QIKINK_CLIENT_SECRET`, with `QIKINK_MODE=sandbox`. Use the SKUs available in that environment. [Qikink Custom API reference](https://documenter.getpostman.com/view/26157218/2sBYAysUHS)
+5. Set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `RAZORPAY_WEBHOOK_SECRET`. Configure automatic capture and a Razorpay webhook for `payment.captured` or `order.paid` at `https://<your-domain>/api/webhooks/razorpay`. Test Razorpay keys pair with Qikink sandbox. [Razorpay payment checklist](https://razorpay.com/security/checklist/)
+6. Complete a sandbox order and confirm the purchased variants, address, and order reference in Qikink. When your live accounts, production SKUs, and Qikink wallet are ready, set `QIKINK_MODE=live` and deploy the corresponding live credentials. Check that the first live order moves into production in your Qikink dashboard. [Qikink prepaid fulfillment](https://qikink.com/help/payments-pricing/payments-and-order-fulfillment/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Configure Cloudinary for admin uploads and Resend for optional order emails. Keep service credentials in server environment variables.
 
-## Learn More
+## Product availability
 
-To learn more about Next.js, take a look at the following resources:
+In Admin → Products, open Qikink No Stock Report and paste the complete SKU column from the current dashboard report. It matches the blank Product SKU across designs. Add that code as the optional third field in each product option, for example `Black / M | STORE-SKU | BLANK-SKU`. The Store SKU sends the purchased design to fulfillment. Applying the report updates the size and colour choices in the catalog, bag, and checkout. Repeat when the report changes.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Fulfillment operations
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Each captured payment stores a fulfillment record with the purchased SKU, quantity, and address. The checkout callback and signed webhook use the same idempotent payment handler. One order submission is claimed at a time, and the Qikink reference identifies the same purchase across retries.
 
-## Deploy on Vercel
+Open **Admin → Orders → [order]** to retry a rejected submission after fixing the cause or refresh an accepted order to show its shipping status and tracking link. For a timed-out or interrupted submission, search by the store reference in Qikink and link the existing order ID. If no order exists and Qikink confirms it, arrange fulfillment in the dashboard with the same reference and link the resulting ID. Cancel fulfillment in the Qikink dashboard and handle refunds in Razorpay.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Storefront imagery
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built-in ImageGen created the After Hours campaign photo, four apparel and accessory mockups, and the Arcade Night tee mockup. The briefs were a charcoal manga-print tee against a crimson moon, studio flat lays of the ghost tee, mecha hoodie, oni tee and distressed cap, and a retro arcade spaceship tee with a lime pixel sun. Optimized images are in `public/images/after-hours.webp` and `public/images/products/*.webp`.

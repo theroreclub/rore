@@ -1,0 +1,159 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum FulfillmentStatus {
+  QUEUED
+  SUBMITTING
+  SUBMITTED
+  FAILED
+  REVIEW
+}
+
+model User {
+  id           String      @id @default(cuid())
+  name         String?
+  email        String      @unique
+  passwordHash String?
+  role         Role        @default(CUSTOMER)
+  addresses    Address[]
+  cartItems    CartItem[]
+  orders       Order[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([role])
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName   String   @default("")
+  street     String
+  city       String
+  state      String
+  postalCode String
+  country    String   @default("IN")
+  phone      String?
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String      @db.Text
+  price       Int         // Integer in smallest currency unit (e.g. paise: 149900 = ₹1,499.00)
+  stock       Int         @default(0)
+  images      String[]    // Array of image paths or URLs
+  qikinkVariants Json    @default("[]")
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  isActive    Boolean     @default(true)
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([categoryId])
+  @@index([isActive])
+  @@index([slug])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  variant   String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId, variant])
+  @@index([userId])
+  @@index([productId])
+}
+
+model Order {
+  id                    String      @id @default(cuid())
+  userId                String
+  user                  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  total                 Int         // Total in smallest currency unit
+  status                OrderStatus @default(PENDING)
+  shippingAddress       String      @db.Text // JSON or serialized address snapshot at order placement
+  paymentId             String?
+  razorpayOrderId       String?     @unique
+  confirmationEmailSent Boolean     @default(false)
+  shippedEmailSent      Boolean     @default(false)
+  qikinkEnvironment     String?
+  qikinkNumber          String?     @unique
+  qikinkOrderId         String?
+  fulfillmentStatus     FulfillmentStatus?
+  fulfillmentError      String?
+  fulfillmentAttemptedAt DateTime?
+  qikinkStatus          String?
+  trackingUrl           String?
+  orderItems            OrderItem[]
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([razorpayOrderId])
+  @@unique([qikinkEnvironment, qikinkOrderId])
+}
+
+model OrderItem {
+  id              String   @id @default(cuid())
+  orderId         String
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  quantity        Int
+  priceAtPurchase Int      // Snapshot of item price in smallest unit when ordered
+  variant         String   @default("")
+  qikinkSku       String?
+  cartItemId      String?
+  createdAt       DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+}
