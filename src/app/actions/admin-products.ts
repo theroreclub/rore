@@ -8,6 +8,13 @@ import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
 import { getVariants } from "@/lib/validations/variants";
 
+function catalogPrices(regular: number, sale?: number | null) {
+  return {
+    price: rupeesToPaise(sale ?? regular),
+    regularPrice: sale == null ? null : rupeesToPaise(regular),
+  };
+}
+
 /**
  * Lists products for the admin panel with search, category filter, and pagination.
  */
@@ -97,7 +104,7 @@ export async function createProduct(input: AdminProductInput) {
         name,
         slug,
         description,
-        price: rupeesToPaise(priceInRupees),
+        ...catalogPrices(priceInRupees, parsed.data.salePriceInRupees),
         stock,
         categoryId,
         isActive,
@@ -158,7 +165,7 @@ export async function updateProduct(id: string, input: AdminProductInput) {
         name,
         slug,
         description,
-        price: rupeesToPaise(priceInRupees),
+        ...catalogPrices(priceInRupees, parsed.data.salePriceInRupees),
         stock,
         categoryId,
         isActive,
@@ -238,6 +245,12 @@ export async function toggleProductActive(id: string, currentStatus: boolean) {
   await requireAdminSession();
 
   try {
+    if (!currentStatus) {
+      const product = await prisma.product.findUnique({ where: { id }, select: { description: true, images: true } });
+      if (!product?.images.length || product.description.trim().length < 10) {
+        return { success: false, error: "Edit this product and add a photo and description before publishing." };
+      }
+    }
     await prisma.product.update({
       where: { id },
       data: { isActive: !currentStatus },

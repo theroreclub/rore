@@ -80,6 +80,8 @@ model Product {
   slug        String      @unique
   description String      @db.Text
   price       Int         // Integer in smallest currency unit (e.g. paise: 149900 = ₹1,499.00)
+  regularPrice Int?       // Original price in paise while a sale is active
+  qikinkProductId String? @unique
   stock       Int         @default(0)
   images      String[]    // Array of image paths or URLs
   qikinkVariants Json    @default("[]")

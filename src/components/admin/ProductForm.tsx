@@ -23,6 +23,7 @@ interface ProductFormProps {
     slug: string;
     description: string;
     price: number; // in paise
+    regularPrice: number | null;
     stock: number;
     categoryId: string;
     isActive: boolean;
@@ -40,8 +41,9 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(isEditing);
   const [description, setDescription] = useState(initialData?.description || "");
   const [priceInRupees, setPriceInRupees] = useState<string | number>(
-    initialData ? paiseToRupees(initialData.price) : ""
+    initialData ? paiseToRupees(initialData.regularPrice ?? initialData.price) : ""
   );
+  const [salePrice, setSalePrice] = useState(initialData?.regularPrice ? String(paiseToRupees(initialData.price)) : "");
   const [stock, setStock] = useState<string | number>(initialData?.stock ?? 0);
   const [categoryId, setCategoryId] = useState(
     initialData?.categoryId || categories[0]?.id || ""
@@ -53,6 +55,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
   );
 
   const [isSaving, setIsSaving] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleNameChange = (val: string) => {
@@ -70,6 +73,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploadingPhoto || isSaving) return;
     const variants = variantsSchema.safeParse(
       variantRows.split("\n").filter((line) => line.trim()).map((line) => {
         const [label, sku, blankSku, extra] = line.split("|");
@@ -88,6 +92,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
       slug,
       description,
       priceInRupees: Number(priceInRupees),
+      salePriceInRupees: salePrice.trim() ? Number(salePrice) : null,
       stock: Number(stock),
       categoryId,
       isActive,
@@ -128,7 +133,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
 
         <button
           type="submit"
-          disabled={isSaving}
+          disabled={isSaving || uploadingPhoto}
           className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-black uppercase tracking-wider transition-all disabled:opacity-50"
         >
           {isSaving ? (
@@ -218,7 +223,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div>
             <label className="block text-xs font-mono font-bold tracking-wider uppercase text-zinc-300 mb-2">
-              Price (₹ INR) *
+              Regular price (₹) *
             </label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-bold">
@@ -227,17 +232,19 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
               <input
                 type="number"
                 required
-                min={1}
-                step={1}
+                min="0.01"
+                step="0.01"
                 value={priceInRupees}
                 onChange={(e) => setPriceInRupees(e.target.value)}
                 placeholder="2499"
                 className="w-full pl-8 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500 font-mono"
               />
             </div>
-            <p className="text-[10px] text-zinc-500 mt-1 font-mono">
-              Auto-stored in paise (e.g. ₹2,499 = 249900 paise)
-            </p>
+            <label htmlFor="sale-price" className="mt-4 block text-xs font-bold text-zinc-300">Sale price (₹)</label>
+            <input id="sale-price" type="number" min="0.01" step="0.01" value={salePrice}
+              onChange={event => setSalePrice(event.target.value)} placeholder="Optional"
+              className="mt-2 w-full px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100" />
+            <p className="mt-1 text-xs text-zinc-400">Clear the sale price to end the discount.</p>
           </div>
 
           <div>
@@ -290,7 +297,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
 
       {/* Media Uploader Card */}
       <div className="p-6 sm:p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800/80">
-        <ProductImageUploader images={images} onChange={setImages} />
+        <ProductImageUploader images={images} onChange={setImages} onUploading={setUploadingPhoto} />
       </div>
     </form>
   );

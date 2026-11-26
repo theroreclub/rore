@@ -20,7 +20,9 @@ npm.cmd run dev
 5. Set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `RAZORPAY_WEBHOOK_SECRET`. Configure automatic capture and a Razorpay webhook for `payment.captured` or `order.paid` at `https://<your-domain>/api/webhooks/razorpay`. Test Razorpay keys pair with Qikink sandbox. [Razorpay payment checklist](https://razorpay.com/security/checklist/)
 6. Complete a sandbox order and confirm the purchased variants, address, and order reference in Qikink. When your live accounts, production SKUs, and Qikink wallet are ready, set `QIKINK_MODE=live` and deploy the corresponding live credentials. Check that the first live order moves into production in your Qikink dashboard. [Qikink prepaid fulfillment](https://qikink.com/help/payments-pricing/payments-and-order-fulfillment/)
 
-Configure Cloudinary for admin uploads and Resend for optional order emails. Keep service credentials in server environment variables.
+In **Admin → Products → Import Qikink designs**, download the CSV template and add one row per variant from **My Products**. Repeat the design ID, title and retail price on each row. Use the actual Store SKU for fulfillment and the optional Product SKU for stock reports. Imported designs are drafts. Re-importing a design skips it and preserves your edits.
+
+Open a draft to add its description and photos, set its regular price and optional sale price, and enable storefront visibility. The sale price applies to the bag and checkout. Clear it to restore the regular price. The first photo is the cover. Uploads accept JPEG, PNG, WebP and AVIF up to 4 MB. On Netlify, photos use site-wide Blobs storage when Cloudinary is unconfigured. Resend is optional for order emails.
 
 ## Product availability
 

@@ -38,7 +38,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const variants = getAvailableVariants(product.qikinkVariants);
   const options = variants.map(({ label }) => label);
   const liveCatalogInSandbox = process.env.QIKINK_MODE === "sandbox" && variants.length > 0 && variants.every(option => option.environment === "live");
-  const { id, name, description, price, stock, images, category } = product;
+  const { id, name, description, price, regularPrice, stock, images, category } = product;
   const related = preview
     ? previewProducts.filter((item) => item.id !== product.id)
     : await prisma.product.findMany({
@@ -56,7 +56,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <div className="grid items-start gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
         <ProductGallery images={product.images} name={product.name} />
         <div>
-          <ProductBuyingPanel key={id} product={{ id, slug, name, description, price, stock, images, category }} options={options} preview={preview} />
+          <ProductBuyingPanel key={id} product={{ id, slug, name, description, price, regularPrice, stock, images, category }} options={options} preview={preview} />
           {liveCatalogInSandbox && <p className="mt-4 text-sm text-zinc-300">You can save this item to your bag. Checkout opens when the store goes live.</p>}
         </div>
       </div>

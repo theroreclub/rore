@@ -26,6 +26,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
         slug: true,
         description: true,
         price: true,
+        regularPrice: true,
         stock: true,
         categoryId: true,
         isActive: true,

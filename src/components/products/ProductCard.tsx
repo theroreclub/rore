@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { formatPrice } from "@/lib/utils";
+import { ProductPrice } from "./ProductPrice";
 
 interface ProductCardProps {
   product: {
     name: string;
     slug: string;
     price: number;
+    regularPrice?: number | null;
     stock: number;
     images: string[];
     category?: { name: string; slug: string } | null;
@@ -29,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="merch-card-body">
         {product.category && <p>{product.category.name}</p>}
         <h3>{product.name}</h3>
-        <span>{formatPrice(product.price)}</span>
+        <ProductPrice price={product.price} regularPrice={product.regularPrice} />
       </div>
     </Link>
   );

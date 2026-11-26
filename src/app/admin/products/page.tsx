@@ -9,6 +9,7 @@ import Link from "next/link";
 import { AlertTriangle, Boxes, Plus, Search } from "lucide-react";
 import { Prisma } from "@prisma/client";
 import { QikinkStockReport } from "@/components/admin/QikinkStockReport";
+import { QikinkCatalogImport } from "@/components/admin/QikinkCatalogImport";
 import { getVariants } from "@/lib/validations/variants";
 
 interface AdminProductsPageProps {
@@ -88,6 +89,7 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
         </Link>
       </div>
 
+      <QikinkCatalogImport categories={categories} />
       <QikinkStockReport />
       {/* Filter / Search Bar */}
       <div className="p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 flex flex-col sm:flex-row gap-4 items-center justify-between">
@@ -159,7 +161,7 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
                         <div className="flex items-center gap-3">
                           <div className="relative w-12 h-12 rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden shrink-0">
                             <Image
-                              src={p.images[0] || "/images/products/vintage-boxy-tee.svg"}
+                              src={p.images[0] || "/images/products/placeholder.svg"}
                               alt={p.name}
                               fill
                               className="object-cover"

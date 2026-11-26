@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { isProductImage } from "@/lib/validations/product-image";
 import { ArrowLeft, ArrowRight, Link as LinkIcon, Trash2, UploadCloud } from "lucide-react";
 
 interface ProductImageUploaderProps {
   images: string[];
   onChange: (images: string[]) => void;
+  onUploading: (pending: boolean) => void;
 }
 
-export function ProductImageUploader({ images, onChange }: ProductImageUploaderProps) {
+export function ProductImageUploader({ images, onChange, onUploading }: ProductImageUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [customUrl, setCustomUrl] = useState("");
@@ -27,14 +29,13 @@ export function ProductImageUploader({ images, onChange }: ProductImageUploaderP
       return;
     }
 
-    // 2. Validate file size (Limit: 5MB)
-    const MAX_SIZE = 5 * 1024 * 1024;
-    if (file.size > MAX_SIZE) {
-      setUploadError("Image size must be less than 5MB.");
+    if (file.size > 4 * 1024 * 1024) {
+      setUploadError("Choose an image of 4 MB or less.");
       return;
     }
 
     setIsUploading(true);
+    onUploading(true);
 
     try {
       // 3. Request signed token from server
@@ -42,11 +43,12 @@ export function ProductImageUploader({ images, onChange }: ProductImageUploaderP
       const signData = await signRes.json();
 
       if (signData.isPlaceholder) {
-        setUploadError(
-          "Cloudinary credentials are not configured in .env. Enter an image URL below instead."
-        );
-        setShowUrlInput(true);
-        setIsUploading(false);
+        const response = await fetch("/api/admin/product-images", {
+          method: "POST", headers: { "x-product-upload": "1" }, body: file,
+        });
+        const result = await response.json();
+        if (!response.ok || !result.url) throw new Error(result.error || "The photo could not be uploaded.");
+        onChange([...images, result.url]);
         return;
       }
 
@@ -80,6 +82,7 @@ export function ProductImageUploader({ images, onChange }: ProductImageUploaderP
       setUploadError(err instanceof Error ? err.message : "Failed to upload image.");
     } finally {
       setIsUploading(false);
+      onUploading(false);
       // Reset input value so same file can be re-selected if needed
       e.target.value = "";
     }
@@ -89,6 +92,11 @@ export function ProductImageUploader({ images, onChange }: ProductImageUploaderP
     e.preventDefault();
     const trimmed = customUrl.trim();
     if (!trimmed) return;
+    if (!isProductImage(trimmed)) {
+      setUploadError("Upload this photo, or enter a Cloudinary, Unsplash or store image URL.");
+      return;
+    }
+    setUploadError(null);
     onChange([...images, trimmed]);
     setCustomUrl("");
     setShowUrlInput(false);
@@ -107,7 +115,7 @@ export function ProductImageUploader({ images, onChange }: ProductImageUploaderP
   };
 
   return (
-    <div className="space-y-4">
+    <fieldset disabled={isUploading} className="space-y-4">
       <div className="flex items-center justify-between">
         <label className="block text-xs font-mono font-bold tracking-wider uppercase text-zinc-300">
           Product Images ({images.length})
@@ -227,9 +235,9 @@ export function ProductImageUploader({ images, onChange }: ProductImageUploaderP
           <span className="text-[11px] font-bold text-zinc-400 group-hover:text-white uppercase tracking-wider">
             {isUploading ? "Uploading..." : "Upload Media"}
           </span>
-          <span className="text-[9px] text-zinc-600 font-mono">Max 5MB (PNG/JPG/WEBP)</span>
+          <span className="text-[9px] text-zinc-500">Up to 4 MB · JPEG, PNG, WebP, AVIF</span>
         </label>
       </div>
-    </div>
+    </fieldset>
   );
 }

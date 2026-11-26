@@ -6,6 +6,7 @@ import { Check, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { SHIPPING_CONFIG } from "@/config/shipping";
 import { formatPrice } from "@/lib/utils";
+import { ProductPrice } from "./ProductPrice";
 
 interface ProductBuyingPanelProps {
   product: {
@@ -14,6 +15,7 @@ interface ProductBuyingPanelProps {
     name: string;
     description: string;
     price: number;
+    regularPrice?: number | null;
     stock: number;
     images: string[];
     category?: { name: string; slug: string } | null;
@@ -56,7 +58,7 @@ export function ProductBuyingPanel({ product, options, preview }: ProductBuyingP
         <Link className="store-text-link" href={`/products?category=${product.category.slug}`}>{product.category.name}</Link>
       )}
       <h1 className="display-type text-5xl uppercase sm:text-6xl">{product.name}</h1>
-      <p className="text-2xl font-extrabold text-accent">{formatPrice(product.price)}</p>
+      <p className="text-2xl font-extrabold text-accent"><ProductPrice price={product.price} regularPrice={product.regularPrice} /></p>
       <p className="text-base leading-relaxed text-zinc-300">{product.description}</p>
 
       {options.length > 0 && (

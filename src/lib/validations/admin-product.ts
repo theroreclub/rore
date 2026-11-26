@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { variantsSchema } from "./variants";
+import { isProductImage } from "./product-image";
 
 export const adminProductSchema = z.object({
   name: z
@@ -24,7 +25,8 @@ export const adminProductSchema = z.object({
   priceInRupees: z
     .coerce
     .number()
-    .positive("Price must be greater than 0"),
+    .min(0.01).max(21474836).multipleOf(0.01),
+  salePriceInRupees: z.number().min(0.01).max(21474836).multipleOf(0.01).nullable().optional(),
   stock: z
     .coerce
     .number()
@@ -34,8 +36,11 @@ export const adminProductSchema = z.object({
   isActive: z.boolean().default(true),
   qikinkVariants: variantsSchema.default([]),
   images: z
-    .array(z.string().min(1))
+    .array(z.string().max(2048).refine(isProductImage, "Upload the photo or use a supported image URL."))
     .min(1, "Please provide at least one product image"),
+}).refine(product => product.salePriceInRupees == null || product.salePriceInRupees < product.priceInRupees, {
+  message: "Sale price must be lower than the regular price.",
+  path: ["salePriceInRupees"],
 });
 
 export type AdminProductInput = z.infer<typeof adminProductSchema>;

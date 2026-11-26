@@ -26,6 +26,7 @@ export const previewProducts = samples.map(({ name, price, category, description
   slug: featuredSlugs[index],
   name,
   price,
+  regularPrice: null,
   description,
   stock: 10,
   images: [`/images/products/${featuredSlugs[index]}.webp`],
