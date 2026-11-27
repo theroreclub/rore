@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
+import { Heart, Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 const navigation = [
@@ -45,6 +45,7 @@ export function Header() {
             {navigation.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
           </nav>
           <div className="header-utilities">
+            <Link className="header-icon" href="/products?wishlist=1" aria-label="Wishlist"><Heart /></Link>
             <button className="header-icon" aria-label="Search merch" onClick={() => search.current?.showModal()}><Search /></button>
             <Link className="header-icon header-account" aria-label={session ? "My account" : "Sign in"} href={session ? "/account" : "/login"}><UserRound /></Link>
             <Link className="header-icon" aria-label={`Bag with ${itemCount} items`} href="/cart">

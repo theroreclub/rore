@@ -2,23 +2,22 @@ import { ProductCard } from "./ProductCard";
 import Link from "next/link";
 import { PackageOpen } from "lucide-react";
 
-interface ProductGridProps {
-  products: Array<{
+export interface GridProduct {
     id: string;
     name: string;
     slug: string;
     description?: string | null;
     price: number;
+    regularPrice?: number | null;
     stock: number;
     images: string[];
     category?: {
       name: string;
       slug: string;
     } | null;
-  }>;
 }
 
-export function ProductGrid({ products }: ProductGridProps) {
+export function ProductGrid({ products }: { products: GridProduct[] }) {
   if (products.length === 0) {
     return (
       <div className="glass flex flex-col items-center justify-center py-20 px-6 text-center rounded-2xl max-w-lg mx-auto">

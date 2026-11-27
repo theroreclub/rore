@@ -7,6 +7,7 @@ import { useCart } from "@/context/CartContext";
 import { SHIPPING_CONFIG } from "@/config/shipping";
 import { formatPrice } from "@/lib/utils";
 import { ProductPrice } from "./ProductPrice";
+import { splitVariants, VariantPicker } from "./VariantPicker";
 
 interface ProductBuyingPanelProps {
   product: {
@@ -26,7 +27,14 @@ interface ProductBuyingPanelProps {
 
 export function ProductBuyingPanel({ product, options, preview }: ProductBuyingPanelProps) {
   const { addItem, items, isLoading } = useCart();
-  const [variant, setVariant] = useState(options.length === 1 ? options[0] : "");
+  const variants = splitVariants(options);
+  const separated = variants.length > 0 && variants.every(option => option.colour);
+  const [colour, setColour] = useState(separated ? variants[0].colour : "");
+  const [size, setSize] = useState(() => {
+    const choices = separated ? variants.filter(option => option.colour === variants[0].colour) : variants;
+    return choices.length === 1 ? (separated ? choices[0].size : choices[0].label) : "";
+  });
+  const variant = separated ? variants.find(option => option.colour === colour && option.size === size)?.label ?? "" : size;
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
   const [feedback, setFeedback] = useState<{ success: boolean; text: string }>();
@@ -62,21 +70,9 @@ export function ProductBuyingPanel({ product, options, preview }: ProductBuyingP
       <p className="text-base leading-relaxed text-zinc-300">{product.description}</p>
 
       {options.length > 0 && (
-        <fieldset className="space-y-2 border-t pt-5">
-          <legend className="sr-only">Choose an option</legend>
-          <p aria-hidden="true" className="font-semibold">Choose an option</p>
-          <div className="flex flex-wrap gap-2">
-            {options.map((label) => (
-              <label key={label} className="cursor-pointer">
-                <input
-                  className="peer sr-only" type="radio" name="product-variant" value={label} checked={variant === label}
-                  onChange={() => { setVariant(label); setQuantity(1); setFeedback(undefined); }}
-                />
-                <span className="inline-flex min-h-11 items-center border px-4 text-sm peer-checked:border-accent peer-checked:bg-accent/15 peer-focus-visible:outline-2">{label}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
+        <VariantPicker options={variants} colour={colour} size={size} select={(nextColour, nextSize) => {
+          setColour(nextColour); setSize(nextSize); setQuantity(1); setFeedback(undefined);
+        }} />
       )}
 
       {canBuy && (
@@ -88,7 +84,7 @@ export function ProductBuyingPanel({ product, options, preview }: ProductBuyingP
           </div>
           <button className="drop-button drop-button-primary flex-1 gap-2 disabled:cursor-not-allowed disabled:opacity-55" type="button"
             disabled={adding || isLoading || (options.length > 0 && !variant)} onClick={addToBag}>
-            <ShoppingBag className="size-4" />{adding ? "Adding…" : options.length && !variant ? "Choose an option" : "Add to bag"}
+            <ShoppingBag className="size-4" />{adding ? "Adding…" : options.length && !variant ? (separated ? "Choose a size" : "Choose an option") : "Add to bag"}
           </button>
         </div>
       )}

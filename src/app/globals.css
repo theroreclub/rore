@@ -117,6 +117,18 @@ body {
 .merch-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 17px; }
 .merch-card { color: var(--store-paper); min-width: 0; display: block; background: var(--store-ink); border: 1px solid #fff0dc20; transition: border-color .2s; }
 .merch-card:hover { border-color: var(--store-tint); }
+.merch-card { position: relative; }
+.wishlist-heart { position: absolute; inset: 7px 7px auto auto; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--store-paper); color: var(--store-ink); border: 1px solid #320b1028; cursor: pointer; }
+.wishlist-heart[aria-pressed="true"] { color: #790b13; }
+.wishlist-heart:focus-visible, .variant-choice input:focus-visible + span { outline: 2px solid currentColor; outline-offset: 3px; }
+.variant-choice > span { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 13px; border: 1px solid #fff0dc55; cursor: pointer; font-size: .875rem; }
+.variant-choice input:checked + span { background: var(--store-paper); border-color: var(--store-paper); color: var(--store-ink); }
+.variant-choice input:disabled + span { opacity: .4; text-decoration: line-through; cursor: default; }
+.variant-choice i { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #8888; }
+@media (min-width: 701px) and (max-width: 880px) {
+  .header-inner .store-navigation { display: none; }
+  .header-inner .mobile-menu { display: inline-flex; }
+}
 .merch-card-image { position: relative; aspect-ratio: 1.04; overflow: hidden; background: var(--store-surface); }
 .merch-card-status { position: absolute; top: 8px; left: 8px; padding: 4px 8px; font-size: .75rem; background: var(--store-ink); }
 .merch-card-body { padding: 13px 14px 17px; }

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { productSearchParamsSchema } from "@/lib/validations/product";
 import { ProductGrid } from "@/components/products/ProductGrid";
+import { WishlistGrid } from "@/components/products/WishlistGrid";
 import { ProductFilter } from "@/components/products/ProductFilter";
 import { Prisma } from "@prisma/client";
 import { previewCategories, previewProducts } from "@/lib/preview-catalog";
@@ -52,6 +53,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     slug: string;
     description?: string | null;
     price: number;
+    regularPrice?: number | null;
     stock: number;
     images: string[];
     category: { name: string; slug: string } | null;
@@ -99,6 +101,15 @@ export default async function ProductsPage({ searchParams }: PageProps) {
 
   // Active Category Name for title
   const activeCategoryObj = categories.find((c) => c.slug === category);
+  if (rawParams.wishlist === "1") {
+    const cards = products.map(({ id, name, slug, price, regularPrice, stock, images, category }) => ({
+      id, name, slug, price, regularPrice, stock, images, category,
+    }));
+    return <div className="store-shell py-8 sm:py-12 space-y-8">
+      <h1 className="display-type text-5xl uppercase sm:text-7xl">Wishlist</h1>
+      <WishlistGrid products={cards} />
+    </div>;
+  }
 
   return (
     <div className="store-shell py-8 sm:py-12 space-y-8">
