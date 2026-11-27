@@ -10,9 +10,13 @@ export function QikinkCatalogImport({ categories }: { categories: { id: string; 
       <summary className="cursor-pointer font-semibold">Import Qikink designs</summary>
       <form action={action} className="mt-4 grid max-w-xl gap-4">
         <p className="text-sm text-zinc-300">
-          <a href="/qikink-import-template.csv" download className="underline">Download the CSV template</a>.
-          Use one row per size and colour. Copy the design ID and each Store SKU from Qikink My Products.
-          The optional Product SKU connects the variant to the No Stock Report. Use your retail price in rupees.
+          Upload your CSV directly from Qikink My Products to create drafts with their names and selling prices.
+          Add photos, a description and the Store SKU for each size and colour before publishing.
+          If Qikink lists a price range, choose a retail price in the editor.
+        </p>
+        <p className="text-sm text-zinc-300">
+          To include variant SKUs in the import, use the{" "}
+          <a href="/qikink-import-template.csv" download className="underline">variant CSV template</a>.
         </p>
         <label>Category <select className="block bg-zinc-900 p-2" name="categoryId" required>
           {categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}

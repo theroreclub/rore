@@ -16,11 +16,30 @@ const rowSchema = z.object({
 export function readCatalogCsv(text: string) {
   const rows: string[][] = parse(text, { bom: true, trim: true, skip_empty_lines: true, max_record_size: 8192 });
   const headers = rows.shift()?.map(header => header.trim().toLowerCase()) ?? [];
+  if (!rows.length || rows.length > 1000) throw new Error("Import between 1 and 1,000 data rows at a time.");
+  const summaryHeaders = ["product id", "products", "selling price"];
+  if (summaryHeaders.every(key => headers.includes(key))) {
+    const [idColumn, productColumn, priceColumn] = summaryHeaders.map(key => headers.indexOf(key));
+    const ids = new Set<string>();
+    return rows.map((cells, index) => {
+      const qikinkProductId = cells[idColumn].trim();
+      const name = cells[productColumn].trim().split(/\r?\n|\s{2,}/, 1)[0].trim();
+      const prices = cells[priceColumn].trim().match(/^(\d+(?:\.\d{1,2})?)(?:\s*[-–]\s*(\d+(?:\.\d{1,2})?))?$/);
+      if (!rowSchema.shape.qikink_product_id.safeParse(qikinkProductId).success ||
+          !rowSchema.shape.title.safeParse(name).success || !prices || ids.has(qikinkProductId)) {
+        throw new Error(`Row ${index + 2}: check the design ID, product name and selling price. Each design ID must appear once in a My Products export.`);
+      }
+      const low = rowSchema.shape.price_rupees.safeParse(prices[1]);
+      const high = rowSchema.shape.price_rupees.safeParse(prices[2] ?? prices[1]);
+      if (!low.success || !high.success || high.data < low.data) throw new Error(`Row ${index + 2}: invalid selling price.`);
+      ids.add(qikinkProductId);
+      return { qikinkProductId, name, price: low.data === high.data ? rupeesToPaise(low.data) : 0, qikinkVariants: [] };
+    });
+  }
   const required = ["qikink_product_id", "title", "price_rupees", "color", "size", "store_sku"];
   if (!required.every(key => headers.includes(key)) || new Set(headers).size !== headers.length) {
-    throw new Error("Use the template headers and copy Store SKUs from My Products.");
+    throw new Error("Upload a Qikink My Products export with Product ID, Products and Selling Price, or use the variant template.");
   }
-  if (!rows.length || rows.length > 1000) throw new Error("Import between 1 and 1,000 variant rows at a time.");
   type Option = z.infer<typeof variantsSchema>[number];
   const products = new Map<string, { qikinkProductId: string; name: string; price: number; qikinkVariants: Option[] }>();
   const storeSkus = new Set<string>();

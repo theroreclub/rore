@@ -26,7 +26,7 @@ export async function importQikinkProducts(_previous: string, data: FormData) {
       })), skipDuplicates: true,
     });
     revalidatePath("/admin/products");
-    return `Imported ${imported.count} draft(s). Skipped ${designs.length - imported.count} existing design(s). Open a draft to add photos and a description before publishing.`;
+    return `Imported ${imported.count} draft(s). Skipped ${designs.length - imported.count} existing design(s). Open each draft to review its details and Store SKUs before publishing.`;
   } catch {
     return "Could not save these drafts. Check the category and try again.";
   }

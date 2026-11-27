@@ -41,7 +41,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(isEditing);
   const [description, setDescription] = useState(initialData?.description || "");
   const [priceInRupees, setPriceInRupees] = useState<string | number>(
-    initialData ? paiseToRupees(initialData.regularPrice ?? initialData.price) : ""
+    initialData?.price ? paiseToRupees(initialData.regularPrice ?? initialData.price) : ""
   );
   const [salePrice, setSalePrice] = useState(initialData?.regularPrice ? String(paiseToRupees(initialData.price)) : "");
   const [stock, setStock] = useState<string | number>(initialData?.stock ?? 0);

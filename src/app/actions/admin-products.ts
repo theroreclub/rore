@@ -157,7 +157,10 @@ export async function updateProduct(id: string, input: AdminProductInput) {
   }
 
   try {
-    const current = await prisma.product.findUniqueOrThrow({ where: { id }, select: { updatedAt: true, qikinkVariants: true } });
+    const current = await prisma.product.findUniqueOrThrow({ where: { id }, select: { updatedAt: true, qikinkVariants: true, qikinkProductId: true } });
+    if (isActive && current.qikinkProductId && !qikinkVariants.length) {
+      return { success: false, error: "Add the Qikink Store SKU for each option before publishing." };
+    }
     const previous = new Map(getVariants(current.qikinkVariants).map(option => [option.sku, option]));
     const product = await prisma.product.update({
       where: { id, updatedAt: current.updatedAt },
@@ -171,7 +174,8 @@ export async function updateProduct(id: string, input: AdminProductInput) {
         isActive,
         images,
         qikinkVariants: qikinkVariants.map(({ label, sku, blankSku }) => ({
-          label, sku, blankSku, unavailable: previous.get(sku)?.unavailable ?? false, environment: previous.get(sku)?.environment,
+          label, sku, blankSku, unavailable: previous.get(sku)?.unavailable ?? false,
+          environment: previous.get(sku)?.environment ?? (current.qikinkProductId ? "live" : undefined),
         })),
       },
     });
@@ -246,7 +250,10 @@ export async function toggleProductActive(id: string, currentStatus: boolean) {
 
   try {
     if (!currentStatus) {
-      const product = await prisma.product.findUnique({ where: { id }, select: { description: true, images: true } });
+      const product = await prisma.product.findUnique({ where: { id }, select: { description: true, images: true, price: true, qikinkProductId: true, qikinkVariants: true } });
+      if (product?.qikinkProductId && (!getVariants(product.qikinkVariants).length || product.price <= 0)) {
+        return { success: false, error: "Edit the draft and add its selling price and Qikink Store SKUs before publishing." };
+      }
       if (!product?.images.length || product.description.trim().length < 10) {
         return { success: false, error: "Edit this product and add a photo and description before publishing." };
       }
