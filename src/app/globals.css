@@ -120,6 +120,12 @@ body {
 .merch-card { position: relative; }
 .wishlist-heart { position: absolute; inset: 7px 7px auto auto; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--store-paper); color: var(--store-ink); border: 1px solid #320b1028; cursor: pointer; }
 .wishlist-heart[aria-pressed="true"] { color: #790b13; }
+@media (hover: hover) and (pointer: fine) {
+  .merch-card:not(:hover):not(:has(:focus-visible)) > .wishlist-heart {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
 .wishlist-heart:focus-visible, .variant-choice input:focus-visible + span { outline: 2px solid currentColor; outline-offset: 3px; }
 .variant-choice > span { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 13px; border: 1px solid #fff0dc55; cursor: pointer; font-size: .875rem; }
 .variant-choice input:checked + span { background: var(--store-paper); border-color: var(--store-paper); color: var(--store-ink); }
