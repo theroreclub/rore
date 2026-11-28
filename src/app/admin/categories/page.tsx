@@ -3,6 +3,12 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 
+export const metadata = {
+  title: "Categories · Admin | RORE CLUB",
+  description: "Organize your RORE CLUB merchandise collections.",
+  robots: { index: false },
+};
+
 export default async function AdminCategoriesPage() {
   const session = await getRequestSession();
   if (!session?.user || session.user.role !== "ADMIN") {

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
@@ -9,6 +10,18 @@ import { ArrowLeft, ArrowRight, Minus, Plus, ShieldCheck, ShoppingBag, Trash2, T
 
 export default function CartPage() {
   const { items, itemCount, subtotal, updateQuantity, removeItem, isLoading } = useCart();
+  const [pending, setPending] = useState(false);
+  const [notice, setNotice] = useState({ text: "", error: false });
+  async function changeBag(action: () => Promise<{ success: boolean; error?: string }>, message: string) {
+    if (pending) return;
+    setPending(true);
+    try {
+      const result = await action();
+      setNotice({ text: result.success ? message : result.error || "Couldn’t update your bag.", error: !result.success });
+    } catch { setNotice({ text: "Couldn’t update your bag. Please try again.", error: true }); }
+    finally { setPending(false); }
+  }
+  const feedback = notice.text && <p className="py-2 text-sm" role={notice.error ? "alert" : "status"}>{notice.text}</p>;
   const shippingFee = calculateShippingFee(subtotal);
   const isPreview = items.some((item) => item.productId.startsWith("preview-"));
 
@@ -26,6 +39,7 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        {feedback}
         <div className="max-w-md mx-auto text-center flex flex-col items-center p-8 sm:p-12 rounded-3xl glass">
           <div className="w-20 h-20 rounded-2xl glass flex items-center justify-center text-accent mb-6 shadow-xl">
             <ShoppingBag className="w-10 h-10" />
@@ -55,6 +69,7 @@ export default function CartPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14">
+      {feedback}
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-6 border-b border-white/[0.08] mb-8">
         <div>
@@ -128,8 +143,8 @@ export default function CartPage() {
                   <div className="flex items-center gap-2 p-1 rounded-xl glass">
                     <button
                       type="button"
-                      onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variant)}
-                      disabled={item.quantity <= 1}
+                      onClick={() => changeBag(() => updateQuantity(item.productId, item.quantity - 1, item.variant), "Quantity updated.")}
+                      disabled={pending || item.quantity <= 1}
                       aria-label="Decrease quantity"
                       className="p-1 rounded-lg text-white/60 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
@@ -142,8 +157,8 @@ export default function CartPage() {
 
                     <button
                       type="button"
-                      onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variant)}
-                      disabled={isAtMaxStock}
+                      onClick={() => changeBag(() => updateQuantity(item.productId, item.quantity + 1, item.variant), "Quantity updated.")}
+                      disabled={pending || isAtMaxStock}
                       aria-label="Increase quantity"
                       className="p-1 rounded-lg text-white/60 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
@@ -161,7 +176,8 @@ export default function CartPage() {
                   {/* Remove Button */}
                   <button
                     type="button"
-                    onClick={() => removeItem(item.productId, item.variant)}
+                    disabled={pending}
+                    onClick={() => changeBag(() => removeItem(item.productId, item.variant), "Item removed from your bag.")}
                     title="Remove item"
                     aria-label={`Remove ${item.product.name}`}
                     className="p-2 rounded-xl text-white/50 hover:text-accent hover:bg-white/10 transition-colors"

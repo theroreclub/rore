@@ -147,7 +147,7 @@ export function ProductImageUploader({ images, onChange, onUploading }: ProductI
               type="text"
               value={customUrl}
               onChange={(e) => setCustomUrl(e.target.value)}
-              placeholder="https://... or /images/products/..."
+
               className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
             />
             <button

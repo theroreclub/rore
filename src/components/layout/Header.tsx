@@ -39,7 +39,7 @@ export function Header() {
     <>
       <header className="store-header">
         <div className="store-shell header-inner">
-          <button className="header-icon mobile-menu" aria-label="Open menu" onClick={() => menu.current?.showModal()}><Menu /></button>
+          <button className="header-icon mobile-menu" aria-label="Open menu" aria-haspopup="dialog" aria-controls="shop-menu" onClick={() => menu.current?.showModal()}><Menu /></button>
           <Link href="/" className="store-logo display-type" aria-label="RORE CLUB home">RORE<span>CLUB</span><i aria-hidden="true">.</i></Link>
           <nav aria-label="Shop" className="store-navigation">
             {navigation.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
@@ -63,16 +63,16 @@ export function Header() {
         <form onSubmit={(event) => {
           event.preventDefault();
           const term = query.trim();
-          if (!term) return;
+          if (!term) { search.current?.querySelector("input")?.focus(); return; }
           search.current?.close();
           router.push(`/products?search=${encodeURIComponent(term)}`);
         }}>
           <label className="sr-only" htmlFor="store-search">Product search</label>
-          <input id="store-search" value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder="Try ghost tee or mecha" required autoFocus />
-          <button className="drop-button drop-button-primary" type="submit">Search</button>
+          <input id="store-search" value={query} onChange={(event) => setQuery(event.target.value)} type="search" aria-label="Search products by name" required autoFocus />
+          <button className="drop-button drop-button-primary" type="submit" disabled={!query.trim()}>Search</button>
         </form>
       </dialog>
-      <dialog ref={menu} className="store-dialog store-menu-dialog" aria-labelledby="menu-title">
+      <dialog id="shop-menu" ref={menu} className="store-dialog store-menu-dialog" aria-labelledby="menu-title">
         <div className="store-dialog-heading">
           <h2 id="menu-title">Shop RORE CLUB</h2>
           <button className="header-icon" aria-label="Close menu" onClick={() => menu.current?.close()}><X /></button>

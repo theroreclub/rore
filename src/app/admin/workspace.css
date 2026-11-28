@@ -98,3 +98,14 @@
   .admin-rail { grid-template-columns:1fr; } .admin-search { flex-basis:100%; max-width:none; }
   .admin-metrics { grid-template-columns:repeat(2,1fr); } .admin-metrics div:last-child { grid-column:1/-1; border-left:0; border-top:1px solid var(--line); }
 }
+
+@media (max-width: 720px) {
+  .category-table,.category-table tbody { display:block; }
+  .category-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+  .category-table tbody tr { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:6px; padding:12px; }
+  .category-table td { padding:2px 0; overflow-wrap:anywhere; }
+  .category-table td:nth-child(2) { grid-row:2; }
+  .category-table td:nth-child(3),.category-table td:last-child { justify-self:end; }
+  .admin-workspace form,.admin-workspace fieldset { min-width:0; }
+  .admin-workspace h1 { overflow-wrap:anywhere; }
+}

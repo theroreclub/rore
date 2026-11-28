@@ -9,6 +9,17 @@ interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+export async function generateMetadata({ searchParams }: PageProps) {
+  const params = await searchParams;
+  if (params.wishlist === "1") return { title: "Wishlist | RORE CLUB", description: "Find the merch you’ve saved to your wishlist." };
+  const category = typeof params.category === "string"
+    ? (await publicCategories()).find(item => item.slug === params.category)?.name : undefined;
+  const name = category || (params.search ? "Search merch" : "All merch");
+  return { title: name + " | RORE CLUB", description: category
+    ? "Explore the " + category + " collection from RORE CLUB, printed to order in India."
+    : "Browse anime tees, fandom hoodies, and accessories. Filter the RORE CLUB collection by category or price." };
+}
+
 export default async function ProductsPage({ searchParams }: PageProps) {
   // Await searchParams in Next.js 15+ App Router
   const rawParams = await searchParams;

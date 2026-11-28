@@ -16,6 +16,12 @@ function ordersUrl(status: string, page = 1) {
   return "/admin/orders" + (params.size ? "?" + params : "");
 }
 
+export const metadata = {
+  title: "Orders · Admin | RORE CLUB",
+  description: "Review customer orders and fulfillment status.",
+  robots: { index: false },
+};
+
 export default async function AdminOrdersPage({ searchParams }: { searchParams: Promise<{ status?: string; page?: string }> }) {
   const params = await searchParams;
   const status = statuses.includes(params.status as OrderStatus) ? params.status as OrderStatus : "";
@@ -37,7 +43,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
           <h3>Order items</h3><ul className="drawer-items">{order.orderItems.map(item =>
             <li key={item.id}><div><strong>{item.product.name}</strong><small>{item.variant}</small></div><span>{item.quantity} × {formatPrice(item.priceAtPurchase)}</span></li>)}</ul>
           <dl className="admin-facts"><dt>Total</dt><dd>{formatPrice(order.total)}</dd><dt>Placed</dt><dd>{placed}</dd>
-            <dt>Customer</dt><dd>{order.user.name || "Customer"}</dd><dt>Email</dt><dd>{order.user.email}</dd>
+            <dt>Customer</dt><dd>{order.user.name || "Customer"}</dd><dt>Email</dt><dd><a className="contact-link" href={`mailto:${order.user.email}`}>{order.user.email}</a></dd>
             <dt>Payment reference</dt><dd>{order.paymentId || order.razorpayOrderId || "Pending"}</dd></dl>
           <Link className="admin-button solid" href={`/admin/orders/${order.id}`}>Manage order <ArrowUpRight size={15}/></Link>
         </DetailDrawer></td><td>{order.user.name || order.user.email}</td><td><span className="status-pill" data-status={order.status}>{labels[order.status]}</span></td>

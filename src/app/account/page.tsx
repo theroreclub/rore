@@ -6,6 +6,12 @@ import { AddressManagement } from "@/components/account/AddressManagement";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Package, ShieldCheck } from "lucide-react";
 
+export const metadata = {
+  title: "My account | RORE CLUB",
+  description: "Manage your RORE CLUB profile, delivery addresses, and order history.",
+  robots: { index: false },
+};
+
 export default async function AccountPage() {
   const session = await auth();
 
@@ -47,14 +53,14 @@ export default async function AccountPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* User Card */}
         <div className="md:col-span-2 p-6 sm:p-8 rounded-3xl bg-zinc-900/60 border border-zinc-800/80 space-y-6">
-          <div className="flex items-start justify-between">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-white font-black text-xl shadow-lg">
                 {user.name ? user.name[0].toUpperCase() : "U"}
               </div>
               <div>
                 <h2 className="text-xl font-bold text-white">{user.name || "Member"}</h2>
-                <p className="text-xs text-zinc-400 mt-0.5">{user.email}</p>
+                <p className="text-xs text-zinc-400 mt-0.5"><a className="contact-link" href={`mailto:${user.email}`}>{user.email}</a></p>
               </div>
             </div>
 
@@ -79,7 +85,7 @@ export default async function AccountPage() {
               </span>
               <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
                 <ShieldCheck className="w-4 h-4" />
-                <span>Verified Member</span>
+                <span>Active member</span>
               </div>
             </div>
           </div>

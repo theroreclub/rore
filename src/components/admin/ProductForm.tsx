@@ -183,7 +183,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
               required
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
-              placeholder="e.g. Cyber Acid Wash Hoodie"
+
               className="w-full px-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
             />
           </div>
@@ -200,7 +200,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
                 setSlug(e.target.value);
                 setIsSlugManuallyEdited(true);
               }}
-              placeholder="cyber-acid-wash-hoodie"
+
               className="w-full px-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500 font-mono"
             />
           </div>
@@ -215,7 +215,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Fabric weight, GSM, silhouette drape, wash details..."
+
             className="w-full px-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
           />
         </div>
@@ -236,13 +236,13 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
                 step="0.01"
                 value={priceInRupees}
                 onChange={(e) => setPriceInRupees(e.target.value)}
-                placeholder="2499"
+
                 className="w-full pl-8 pr-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500 font-mono"
               />
             </div>
             <label htmlFor="sale-price" className="mt-4 block text-xs font-bold text-slate-700">Sale price (₹)</label>
             <input id="sale-price" type="number" min="0.01" step="0.01" value={salePrice}
-              onChange={event => setSalePrice(event.target.value)} placeholder="Optional"
+              onChange={event => setSalePrice(event.target.value)}
               className="mt-2 w-full px-4 py-2 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900" />
             <p className="mt-1 text-xs text-slate-600">Clear the sale price to end the discount.</p>
           </div>
@@ -258,7 +258,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
               step={1}
               value={stock}
               onChange={(e) => setStock(e.target.value)}
-              placeholder="30"
+
               className="w-full px-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500 font-mono"
             />
           </div>

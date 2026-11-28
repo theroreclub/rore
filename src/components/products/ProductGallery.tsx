@@ -28,7 +28,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
 
       {/* Thumbnails (if multiple images exist) */}
       {displayImages.length > 1 && (
-        <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
+        <div className="flex flex-wrap items-center gap-3 py-1">
           {displayImages.map((img, idx) => {
             const isSelected = idx === selectedIndex;
             return (

@@ -38,6 +38,8 @@ export function AddressManagement({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [notice, setNotice] = useState("");
+
   // Form state
   const [formData, setFormData] = useState<AddressInput>({
     fullName: "",
@@ -140,6 +142,7 @@ export function AddressManagement({
       }
     }
 
+    setNotice(editingAddress ? "Address updated." : "Delivery address saved.");
     setIsSubmitting(false);
     setIsModalOpen(false);
   };
@@ -148,6 +151,7 @@ export function AddressManagement({
     if (!confirm("Are you sure you want to remove this delivery address?")) return;
     const res = await deleteAddress(id);
     if (res.success) {
+      setNotice("Address removed.");
       setAddresses((prev) => prev.filter((a) => a.id !== id));
     } else {
       alert(res.error || "Failed to delete address");
@@ -157,6 +161,7 @@ export function AddressManagement({
   const handleSetDefault = async (id: string) => {
     const res = await setDefaultAddress(id);
     if (res.success) {
+      setNotice("Default address updated.");
       setAddresses((prev) =>
         prev.map((a) => ({
           ...a,
@@ -170,7 +175,8 @@ export function AddressManagement({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {notice && <p role="status" className="text-sm">{notice}</p>}
+      <div className="flex flex-wrap gap-3 items-center justify-between">
         <div>
           <h3 className="text-base font-bold text-white uppercase tracking-wider font-mono">
             Delivery Addresses
@@ -229,7 +235,7 @@ export function AddressManagement({
                     {addr.city}, {addr.state} {addr.postalCode}
                   </p>
                   <p>{addr.country}</p>
-                  {addr.phone && <p className="text-zinc-500 mt-1 font-mono">Ph: {addr.phone}</p>}
+                  {addr.phone && <p className="text-zinc-500 mt-1 font-mono"><a className="contact-link" href={`tel:${addr.phone.replace(/[^+0-9]/g, "")}`}>{addr.phone}</a></p>}
                 </div>
               </div>
 
@@ -278,7 +284,7 @@ export function AddressManagement({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-lg p-6 sm:p-8 rounded-3xl bg-zinc-900 border border-zinc-800 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
-              onClick={() => setIsModalOpen(false)}
+              aria-label="Close address form" onClick={() => setIsModalOpen(false)}
               className="absolute top-5 right-5 text-zinc-400 hover:text-white p-1"
             >
               <X className="w-5 h-5" />
@@ -289,79 +295,79 @@ export function AddressManagement({
             </h3>
 
             {error && (
-              <div className="mt-4 p-3 rounded-xl bg-rose-950/60 border border-rose-800 text-xs text-rose-300">
+              <div role="alert" className="mt-4 p-3 rounded-xl bg-rose-950/60 border border-rose-800 text-xs text-rose-300">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <form onSubmit={async event => { try { await handleSubmit(event); } catch { setError("Couldn’t save the address. Please try again."); setIsSubmitting(false); } }} className="mt-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                <label htmlFor="delivery-fullName" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
                   Recipient Full Name *
                 </label>
-                <input
+                <input id="delivery-fullName"
                   type="text"
                   required
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  placeholder="e.g. Kenji Sato"
+
                   className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                <label htmlFor="delivery-phone" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
                   Phone Number (For Delivery Updates) *
                 </label>
-                <input
+                <input id="delivery-phone"
                   type="tel"
                   required
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+91 9876543210"
+
                   className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                <label htmlFor="delivery-street" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
                   Street Address & Flat / Building *
                 </label>
-                <input
+                <input id="delivery-street"
                   type="text"
                   required
                   value={formData.street}
                   onChange={(e) => setFormData({ ...formData, street: e.target.value })}
-                  placeholder="Flat 402, Neo Tower, 12th Main Road"
+
                   className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                  <label htmlFor="delivery-city" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
                     City *
                   </label>
-                  <input
+                  <input id="delivery-city"
                     type="text"
                     required
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    placeholder="Mumbai"
+
                     className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                  <label htmlFor="delivery-state" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
                     State / Region *
                   </label>
-                  <input
+                  <input id="delivery-state"
                     type="text"
                     required
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    placeholder="Maharashtra"
+
                     className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
                   />
                 </div>
@@ -369,24 +375,24 @@ export function AddressManagement({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                  <label htmlFor="delivery-postalCode" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
                     PIN / Postal Code *
                   </label>
-                  <input
+                  <input id="delivery-postalCode"
                     type="text"
                     required
                     value={formData.postalCode}
                     onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                    placeholder="400001"
+
                     className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                  <label htmlFor="delivery-country" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
                     Country *
                   </label>
-                  <input
+                  <input id="delivery-country"
                     type="text"
                     required
                     value={formData.country}

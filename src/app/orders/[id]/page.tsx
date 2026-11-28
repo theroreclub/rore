@@ -12,6 +12,12 @@ interface OrderPageProps {
   searchParams: Promise<{ payment?: string }>;
 }
 
+export const metadata = {
+  title: "Order details | RORE CLUB",
+  description: "View the items, payment status, and delivery information for your order.",
+  robots: { index: false },
+};
+
 export default async function OrderDetailPage({ params, searchParams }: OrderPageProps) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -183,7 +189,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderPag
               </p>
               <p>{shippingAddress.country}</p>
               {shippingAddress.phone && (
-                <p className="text-zinc-500 font-mono mt-1">Ph: {shippingAddress.phone}</p>
+                <p className="text-zinc-500 font-mono mt-1"><a className="contact-link" href={`tel:${shippingAddress.phone.replace(/[^+0-9]/g, "")}`}>{shippingAddress.phone}</a></p>
               )}
             </div>
           </div>

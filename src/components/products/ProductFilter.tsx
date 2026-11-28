@@ -64,7 +64,7 @@ export function ProductFilter({
       <div className="sticky top-14 sm:top-16 z-30 mb-8 p-3 sm:p-4 rounded-2xl glass transition-all duration-300">
         <div className="flex items-center justify-between gap-4">
           {/* Category Pills (Desktop) */}
-          <div className="hidden md:flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+          <div className="hidden xl:flex flex-wrap items-center gap-2 py-0.5">
             <button
               onClick={() => updateFilters({ category: null })}
               className={`px-4 py-1.5 rounded-full text-xs font-sans font-medium uppercase tracking-[0.1em] whitespace-nowrap transition-all cursor-pointer ${
@@ -97,19 +97,19 @@ export function ProductFilter({
           {/* Search & Sort Controls */}
           <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
             {/* Inline Compact Search */}
-            <form onSubmit={handleSearchSubmit} className="relative flex-1 md:w-64">
+            <form key={currentSearch} onSubmit={handleSearchSubmit} className="relative flex-1 md:w-64">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400 pointer-events-none" />
               <input
                 type="text"
                 name="search"
                 defaultValue={currentSearch}
-                placeholder="Filter drops..."
+                aria-label="Search catalog" placeholder="Search merch"
                 className="w-full pl-9 pr-14 py-1.5 bg-white/[0.06] border border-white/15 rounded-full text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
               />
               {currentSearch && (
                 <button
                   type="button"
-                  onClick={() => updateFilters({ search: null })}
+                  aria-label="Clear search" onClick={() => updateFilters({ search: null })}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-white text-xs"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -120,7 +120,7 @@ export function ProductFilter({
             {/* Sort Select (Desktop) */}
             <div className="hidden sm:flex items-center gap-2">
               <select
-                value={currentSort}
+                aria-label="Sort products" value={currentSort}
                 onChange={(e) => updateFilters({ sort: e.target.value })}
                 className="h-8 px-3 rounded-full glass text-xs font-sans text-zinc-300 hover:text-white focus:outline-none focus:border-accent cursor-pointer"
               >
@@ -133,7 +133,7 @@ export function ProductFilter({
             {/* Mobile Filter Sheet Button */}
             <button
               onClick={() => setIsMobileFilterOpen(true)}
-              className="md:hidden flex items-center gap-2 px-3.5 py-1.5 rounded-full glass text-xs font-medium text-white"
+              className="xl:hidden flex items-center gap-2 px-3.5 py-1.5 rounded-full glass text-xs font-medium text-white"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>Filters</span>
@@ -144,7 +144,7 @@ export function ProductFilter({
 
       {/* Mobile Bottom-Sheet Glass Drawer */}
       {isMobileFilterOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-50 xl:hidden">
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
@@ -158,7 +158,7 @@ export function ProductFilter({
                 Filter & Sort Drops
               </span>
               <button
-                onClick={() => setIsMobileFilterOpen(false)}
+                aria-label="Close filters" onClick={() => setIsMobileFilterOpen(false)}
                 className="p-1 rounded-full glass text-zinc-400 hover:text-white"
               >
                 <X className="w-4 h-4" />

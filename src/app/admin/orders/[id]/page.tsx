@@ -22,6 +22,12 @@ function parseAddressSafely(addressStr: string) {
   }
 }
 
+export const metadata = {
+  title: "Order details · Admin | RORE CLUB",
+  description: "Review order items and manage fulfillment.",
+  robots: { index: false },
+};
+
 export default async function AdminOrderDetailPage({ params }: AdminOrderDetailPageProps) {
   const session = await getRequestSession();
   if (!session?.user || session.user.role !== "ADMIN") {
@@ -198,7 +204,7 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
                 </p>
                 <p>{parsedAddress.country || "India"}</p>
                 {parsedAddress.phone && (
-                  <p className="text-slate-600 pt-1">Phone: {parsedAddress.phone}</p>
+                  <p className="text-slate-600 pt-1"><a className="contact-link" href={`tel:${parsedAddress.phone.replace(/[^+0-9]/g, "")}`}>{parsedAddress.phone}</a></p>
                 )}
               </div>
             ) : (

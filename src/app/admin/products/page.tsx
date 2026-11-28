@@ -17,6 +17,12 @@ import { SummaryRing } from "@/components/admin/SummaryRing";
 
 type Filters = { search?: string; category?: string; status?: string; page?: string };
 
+export const metadata = {
+  title: "Product catalog · Admin | RORE CLUB",
+  description: "Manage products, prices, photos, and Qikink imports.",
+  robots: { index: false },
+};
+
 export default async function AdminProductsPage({ searchParams }: { searchParams: Promise<Filters> }) {
   const session = await getRequestSession();
   if (session?.user.role !== "ADMIN") redirect("/");

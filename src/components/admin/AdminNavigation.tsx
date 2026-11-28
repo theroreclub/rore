@@ -20,7 +20,7 @@ export function AdminNavigation({ email }: { email: string }) {
       <nav aria-label="Admin navigation">{sections.map(({ href, label, icon: Icon }) =>
         <Link key={href} href={href} aria-current={href === current.href ? "page" : undefined}><Icon size={17} />{label}</Link>
       )}</nav>
-      <div className="admin-user"><span className="admin-avatar">RC</span><div><strong>Store admin</strong><small>{email}</small></div></div>
+      <div className="admin-user"><span className="admin-avatar">RC</span><div><strong>Store admin</strong><small><a href={`mailto:${email}`}>{email}</a></small></div></div>
     </aside>
     <div className="admin-top"><div><Store size={15} /> Workspace <span>/</span> <strong>{current.label}</strong></div>
       <Link href="/">View store <ArrowUpRight size={15} /></Link>

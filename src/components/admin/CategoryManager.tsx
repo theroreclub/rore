@@ -212,7 +212,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                   Existing Categories ({categories.length})
                 </h2>
                 <p className="text-[11px] text-slate-600">
-                  Streetwear aesthetics and silhouettes taxonomy.
+                  Products grouped by collection.
                 </p>
               </div>
             </div>
@@ -224,7 +224,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="category-table w-full text-left text-xs">
                   <thead className="bg-[#fff] text-slate-600 uppercase font-mono tracking-wider border-b border-slate-200">
                     <tr>
                       <th className="py-3.5 px-6">Name</th>
@@ -274,7 +274,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
 
                             <button
                               onClick={() => handleDelete(c)}
-                              disabled={isPending}
+                              disabled={isPending || c._count.products > 0}
                               className={`p-1.5 rounded-lg border transition-colors ${
                                 c._count.products > 0
                                   ? "bg-[#fff] border-slate-200 text-slate-500 cursor-not-allowed"
@@ -335,7 +335,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                 required
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
-                placeholder="e.g. Graphic Hoodies"
+
                 className="w-full px-3.5 py-2.5 bg-[#fff] border border-slate-200 rounded-md text-xs text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
               />
             </div>
@@ -359,7 +359,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                   setIsSlugManual(true);
                   setSlug(e.target.value);
                 }}
-                placeholder="e.g. graphic-hoodies"
+
                 className="w-full px-3.5 py-2.5 bg-[#fff] border border-slate-200 rounded-md text-xs font-mono text-slate-800 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
               />
             </div>
@@ -372,7 +372,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Brief summary of this clothing category..."
+
                 className="w-full px-3.5 py-2.5 bg-[#fff] border border-slate-200 rounded-md text-xs text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500 resize-none"
               />
             </div>

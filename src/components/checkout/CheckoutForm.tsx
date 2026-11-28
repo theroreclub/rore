@@ -234,7 +234,7 @@ export function CheckoutForm({
                       <div className="flex items-start gap-3">
                         <input
                           type="radio"
-                          name="selectedAddress"
+                          name="selectedAddress" aria-label={`Deliver to ${addr.fullName}, ${addr.street}`}
                           checked={isSelected}
                           onChange={() => setSelectedAddressId(addr.id)}
                           className="mt-1 accent-accent focus:ring-0"
@@ -246,7 +246,7 @@ export function CheckoutForm({
                             {addr.city}, {addr.state} {addr.postalCode}
                           </p>
                           {addr.phone && (
-                            <p className="text-zinc-500 font-mono">Ph: {addr.phone}</p>
+                            <p className="text-zinc-500 font-mono"><a className="contact-link" href={`tel:${addr.phone.replace(/[^+0-9]/g, "")}`}>{addr.phone}</a></p>
                           )}
                         </div>
                       </div>

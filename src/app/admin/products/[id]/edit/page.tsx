@@ -10,6 +10,12 @@ interface EditProductPageProps {
   }>;
 }
 
+export const metadata = {
+  title: "Edit product · Admin | RORE CLUB",
+  description: "Update your product details, prices, images, and available variants.",
+  robots: { index: false },
+};
+
 export default async function EditProductPage({ params }: EditProductPageProps) {
   const session = await getRequestSession();
   if (!session?.user || session.user.role !== "ADMIN") {

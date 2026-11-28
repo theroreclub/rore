@@ -7,6 +7,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, PackageOpen } from "lucide-react";
 
+export const metadata = {
+  title: "Order history | RORE CLUB",
+  description: "View your RORE CLUB purchases and open order details.",
+  robots: { index: false },
+};
+
 export default async function OrderHistoryPage() {
   const session = await auth();
 
@@ -104,7 +110,7 @@ export default async function OrderHistoryPage() {
                     </Badge>
                   </div>
 
-                  <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                  <div className="flex flex-wrap items-center gap-2 pb-1">
                     {order.orderItems.slice(0, 4).map((item, idx) => (
                       <div
                         key={idx}

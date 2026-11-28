@@ -9,6 +9,12 @@ import { getCartItemLimit } from "@/lib/validations/variants";
 import { getQikinkConfig } from "@/lib/qikink/client";
 import { paymentGateway } from "@/lib/payments/razorpay";
 
+export const metadata = {
+  title: "Checkout | RORE CLUB",
+  description: "Select a delivery address and complete your RORE CLUB order.",
+  robots: { index: false },
+};
+
 export default async function CheckoutPage() {
   const session = await auth();
 

@@ -3,6 +3,12 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ProductForm } from "@/components/admin/ProductForm";
 
+export const metadata = {
+  title: "New product · Admin | RORE CLUB",
+  description: "Add a product to the RORE CLUB catalog.",
+  robots: { index: false },
+};
+
 export default async function NewProductPage() {
   const session = await getRequestSession();
   if (!session?.user || session.user.role !== "ADMIN") {

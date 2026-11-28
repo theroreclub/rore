@@ -3,6 +3,12 @@ import { ArrowUpRight, Plus, PackageCheck, ShoppingBag } from "lucide-react";
 import { getAdminDashboardMetrics } from "@/app/actions/admin-orders";
 import { formatPrice } from "@/lib/utils";
 
+export const metadata = {
+  title: "Admin overview | RORE CLUB",
+  description: "View store revenue, recent orders, and items that need attention.",
+  robots: { index: false },
+};
+
 export default async function AdminDashboardPage() {
   const { totalOrders, totalRevenue, pendingShipments, recentOrders, unavailableProducts, unavailableCount } = await getAdminDashboardMetrics();
   return <div className="admin-columns"><section className="admin-primary">
