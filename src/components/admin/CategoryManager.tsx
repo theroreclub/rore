@@ -16,7 +16,6 @@ import {
   Boxes,
   Sparkles,
 } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
 
 interface CategoryItem {
   id: string;
@@ -188,16 +187,16 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
       {/* Toast Notice */}
       {statusMessage && (
         <div
-          className={`flex items-center gap-2 p-4 rounded-xl border text-xs font-mono transition-all ${
+          className={`flex items-center gap-2 p-4 rounded-md border text-xs font-mono transition-all ${
             statusMessage.type === "success"
-              ? "bg-emerald-950/60 border-emerald-800 text-emerald-300"
-              : "bg-rose-950/60 border-rose-800 text-rose-300"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-red-50 border-red-200 text-red-800"
           }`}
         >
           {statusMessage.type === "success" ? (
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-800" />
           ) : (
-            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+            <AlertTriangle className="w-4 h-4 shrink-0 text-red-800" />
           )}
           <span>{statusMessage.text}</span>
         </div>
@@ -206,13 +205,13 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Category List (2 Cols) */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="rounded-3xl bg-zinc-900/40 border border-zinc-800/80 overflow-hidden">
-            <div className="p-4 sm:p-6 border-b border-zinc-800 flex items-center justify-between">
+          <div className="rounded-lg bg-slate-50 border border-slate-200 overflow-hidden">
+            <div className="p-4 sm:p-6 border-b border-slate-200 flex items-center justify-between">
               <div>
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
                   Existing Categories ({categories.length})
                 </h2>
-                <p className="text-[11px] text-zinc-500">
+                <p className="text-[11px] text-slate-600">
                   Streetwear aesthetics and silhouettes taxonomy.
                 </p>
               </div>
@@ -220,13 +219,13 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
 
             {categories.length === 0 ? (
               <div className="p-12 text-center space-y-3">
-                <Boxes className="w-8 h-8 text-zinc-600 mx-auto" />
-                <p className="text-xs text-zinc-400">No categories found in database.</p>
+                <Boxes className="w-8 h-8 text-slate-500 mx-auto" />
+                <p className="text-xs text-slate-600">No categories found in database.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-zinc-950/80 text-zinc-400 uppercase font-mono tracking-wider border-b border-zinc-800">
+                  <thead className="bg-[#fff] text-slate-600 uppercase font-mono tracking-wider border-b border-slate-200">
                     <tr>
                       <th className="py-3.5 px-6">Name</th>
                       <th className="py-3.5 px-4">Slug</th>
@@ -234,43 +233,40 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                       <th className="py-3.5 px-6 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
+                  <tbody className="divide-y divide-slate-200 text-slate-700">
                     {categories.map((c) => (
                       <tr
                         key={c.id}
-                        className={`hover:bg-zinc-900/40 transition-colors ${
-                          editId === c.id ? "bg-zinc-900/60 border-l-2 border-rose-500" : ""
+                        className={`hover:bg-slate-50 transition-colors ${
+                          editId === c.id ? "bg-slate-50 border-l-2 border-rose-500" : ""
                         }`}
                       >
-                        <td className="py-4 px-6 font-bold text-white">
+                        <td className="py-4 px-6 font-bold text-slate-900">
                           <div>
                             <span>{c.name}</span>
                             {c.description && (
-                              <p className="text-[11px] text-zinc-500 line-clamp-1 mt-0.5 font-normal">
+                              <p className="text-[11px] text-slate-600 line-clamp-1 mt-0.5 font-normal">
                                 {c.description}
                               </p>
                             )}
                           </div>
                         </td>
 
-                        <td className="py-4 px-4 font-mono text-zinc-400">
+                        <td className="py-4 px-4 font-mono text-slate-600">
                           /{c.slug}
                         </td>
 
                         <td className="py-4 px-4">
-                          <Badge
-                            variant={c._count.products > 0 ? "outline" : "secondary"}
-                            className="font-mono text-[11px]"
-                          >
-                            {c._count.products} Drop{c._count.products === 1 ? "" : "s"}
-                          </Badge>
+                          <span className="status-pill" data-live={c._count.products > 0}>
+                            {c._count.products} product{c._count.products === 1 ? "" : "s"}
+                          </span>
                         </td>
 
                         <td className="py-4 px-6 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => handleOpenEdit(c)}
-                              className="p-1.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+                              className="p-1.5 rounded-lg bg-[#fff] hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-colors"
                               title="Rename / Edit category"
                             >
                               <Edit2 className="w-3.5 h-3.5" />
@@ -281,8 +277,8 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                               disabled={isPending}
                               className={`p-1.5 rounded-lg border transition-colors ${
                                 c._count.products > 0
-                                  ? "bg-zinc-950/40 border-zinc-800/40 text-zinc-600 cursor-not-allowed"
-                                  : "bg-zinc-950 hover:bg-rose-950/40 border-zinc-800 hover:border-rose-800/50 text-zinc-400 hover:text-rose-400"
+                                  ? "bg-[#fff] border-slate-200 text-slate-500 cursor-not-allowed"
+                                  : "bg-[#fff] hover:bg-red-50 border-slate-200 hover:border-red-200 text-slate-600 hover:text-red-800"
                               }`}
                               title={
                                 c._count.products > 0
@@ -304,18 +300,18 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
         </div>
 
         {/* Add / Edit Form (1 Col) */}
-        <div className="lg:col-span-1 rounded-3xl bg-zinc-900/40 border border-zinc-800/80 p-6 space-y-6">
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+        <div className="lg:col-span-1 rounded-lg bg-slate-50 border border-slate-200 p-6 space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
             <div className="flex items-center gap-2">
-              <FolderPlus className="w-4 h-4 text-rose-500" />
-              <h2 className="text-xs font-bold text-white uppercase tracking-wider">
+              <FolderPlus className="w-4 h-4 text-red-800" />
+              <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 {isEditing ? "Rename / Edit Category" : "Add New Category"}
               </h2>
             </div>
             {isEditing && (
               <button
                 onClick={handleOpenCreate}
-                className="text-[11px] text-zinc-500 hover:text-zinc-300 font-mono transition-colors"
+                className="text-[11px] text-slate-600 hover:text-slate-700 font-mono transition-colors"
               >
                 Cancel Edit
               </button>
@@ -323,7 +319,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
           </div>
 
           {formError && (
-            <div className="p-3 rounded-xl bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-md bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>{formError}</span>
             </div>
@@ -331,7 +327,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-mono uppercase text-zinc-400 font-bold">
+              <label className="text-[11px] font-mono uppercase text-slate-600 font-bold">
                 Category Name *
               </label>
               <input
@@ -340,17 +336,17 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="e.g. Graphic Hoodies"
-                className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-rose-500"
+                className="w-full px-3.5 py-2.5 bg-[#fff] border border-slate-200 rounded-md text-xs text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
               />
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-mono uppercase text-zinc-400 font-bold">
+                <label className="text-[11px] font-mono uppercase text-slate-600 font-bold">
                   Slug (URL Path) *
                 </label>
                 {!isSlugManual && (
-                  <span className="text-[10px] text-rose-400 font-mono flex items-center gap-1">
+                  <span className="text-[10px] text-red-800 font-mono flex items-center gap-1">
                     <Sparkles className="w-3 h-3" /> Auto
                   </span>
                 )}
@@ -364,12 +360,12 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                   setSlug(e.target.value);
                 }}
                 placeholder="e.g. graphic-hoodies"
-                className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
+                className="w-full px-3.5 py-2.5 bg-[#fff] border border-slate-200 rounded-md text-xs font-mono text-slate-800 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-mono uppercase text-zinc-400 font-bold">
+              <label className="text-[11px] font-mono uppercase text-slate-600 font-bold">
                 Description (Optional)
               </label>
               <textarea
@@ -377,14 +373,14 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief summary of this clothing category..."
-                className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-rose-500 resize-none"
+                className="w-full px-3.5 py-2.5 bg-[#fff] border border-slate-200 rounded-md text-xs text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500 resize-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={isPending || !name.trim() || !slug.trim()}
-              className="w-full mt-2 py-3 px-4 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-black text-xs uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
+              className="w-full mt-2 py-3 px-4 rounded-md bg-slate-900 hover:bg-slate-700 text-slate-50 font-black text-xs uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm"
             >
               {isPending ? (
                 <>

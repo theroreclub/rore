@@ -32,15 +32,15 @@ export function QikinkOrderControl({ orderId, reference, environment, providerId
   }
 
   return (
-    <section className="grid gap-3 rounded-2xl border p-5">
+    <section className="grid gap-3 rounded-lg border p-5">
       <h2 className="font-bold">Qikink fulfillment</h2>
-      <p className="text-sm text-zinc-300">{status || "Awaiting captured payment"} · {environment} · Reference <strong>{reference}</strong></p>
-      {providerId && <p className="text-sm text-zinc-300">Qikink order {providerId}</p>}
-      {error && <p className="text-sm text-amber-300">{error}</p>}
+      <p className="text-sm text-slate-700">{status || "Awaiting captured payment"} · {environment} · Reference <strong>{reference}</strong></p>
+      {providerId && <p className="text-sm text-slate-700">Qikink order {providerId}</p>}
+      {error && <p className="text-sm text-amber-800">{error}</p>}
       {needsReview && (
         <label className="grid max-w-md gap-2 text-sm">
           Find this reference in the Qikink dashboard and enter its existing order ID.
-          <input type="text" inputMode="numeric" value={manualId} onChange={(event) => setManualId(event.target.value)} className="rounded-lg border bg-zinc-950 p-2" />
+          <input type="text" inputMode="numeric" value={manualId} onChange={(event) => setManualId(event.target.value)} className="rounded-lg border bg-[#fff] p-2" />
         </label>
       )}
       <div className="flex flex-wrap gap-2">

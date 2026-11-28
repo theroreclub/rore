@@ -125,7 +125,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
       <div className="flex items-center justify-between">
         <Link
           href="/admin/products"
-          className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Products
@@ -134,10 +134,10 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
         <button
           type="submit"
           disabled={isSaving || uploadingPhoto}
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-black uppercase tracking-wider transition-all disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-md bg-slate-900 hover:bg-slate-700 text-slate-50 text-xs font-black uppercase tracking-wider transition-all disabled:opacity-50"
         >
           {isSaving ? (
-            <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-slate-200 border-t-transparent rounded-full animate-spin" />
           ) : (
             <>
               <Save className="w-3.5 h-3.5" />
@@ -147,35 +147,35 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
         </button>
       </div>
 
-      <div className="grid gap-2 rounded-2xl border p-5">
+      <div className="grid gap-2 rounded-lg border p-5">
         <label htmlFor="qikink-variants" className="font-semibold">Qikink product options</label>
-        <p id="qikink-variants-help" className="text-sm text-zinc-400">
+        <p id="qikink-variants-help" className="text-sm text-slate-600">
           In Qikink Product Variations, copy one option per line as Label | Store SKU | Product SKU. The last field matches the No Stock Report. For a product with one option, use One size as its label.
         </p>
         <textarea
           id="qikink-variants"
           aria-describedby="qikink-variants-help"
-          className="min-h-28 rounded-lg border bg-zinc-950 p-3 font-mono text-sm"
+          className="min-h-28 rounded-lg border bg-[#fff] p-3 font-mono text-sm"
           value={variantRows}
           onChange={(event) => setVariantRows(event.target.value)}
         />
       </div>
 
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-950/60 border border-rose-800 text-xs text-rose-300">
+        <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-xs text-red-800">
           {error}
         </div>
       )}
 
       {/* Main Info Card */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800/80 space-y-6">
-        <h2 className="text-base font-bold text-white uppercase tracking-wider font-mono">
+      <div className="p-6 sm:p-8 rounded-lg bg-slate-50 border border-slate-200 space-y-6">
+        <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider font-mono">
           Product Details
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-xs font-mono font-bold tracking-wider uppercase text-zinc-300 mb-2">
+            <label className="block text-xs font-mono font-bold tracking-wider uppercase text-slate-700 mb-2">
               Drop Title *
             </label>
             <input
@@ -184,12 +184,12 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
               placeholder="e.g. Cyber Acid Wash Hoodie"
-              className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
+              className="w-full px-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-mono font-bold tracking-wider uppercase text-zinc-300 mb-2">
+            <label className="block text-xs font-mono font-bold tracking-wider uppercase text-slate-700 mb-2">
               URL Slug *
             </label>
             <input
@@ -201,13 +201,13 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
                 setIsSlugManuallyEdited(true);
               }}
               placeholder="cyber-acid-wash-hoodie"
-              className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500 font-mono"
+              className="w-full px-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500 font-mono"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-mono font-bold tracking-wider uppercase text-zinc-300 mb-2">
+          <label className="block text-xs font-mono font-bold tracking-wider uppercase text-slate-700 mb-2">
             Description & Specifications *
           </label>
           <textarea
@@ -216,17 +216,17 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Fabric weight, GSM, silhouette drape, wash details..."
-            className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
+            className="w-full px-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div>
-            <label className="block text-xs font-mono font-bold tracking-wider uppercase text-zinc-300 mb-2">
+            <label className="block text-xs font-mono font-bold tracking-wider uppercase text-slate-700 mb-2">
               Regular price (₹) *
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-bold">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 font-bold">
                 ₹
               </span>
               <input
@@ -237,18 +237,18 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
                 value={priceInRupees}
                 onChange={(e) => setPriceInRupees(e.target.value)}
                 placeholder="2499"
-                className="w-full pl-8 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500 font-mono"
+                className="w-full pl-8 pr-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500 font-mono"
               />
             </div>
-            <label htmlFor="sale-price" className="mt-4 block text-xs font-bold text-zinc-300">Sale price (₹)</label>
+            <label htmlFor="sale-price" className="mt-4 block text-xs font-bold text-slate-700">Sale price (₹)</label>
             <input id="sale-price" type="number" min="0.01" step="0.01" value={salePrice}
               onChange={event => setSalePrice(event.target.value)} placeholder="Optional"
-              className="mt-2 w-full px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100" />
-            <p className="mt-1 text-xs text-zinc-400">Clear the sale price to end the discount.</p>
+              className="mt-2 w-full px-4 py-2 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900" />
+            <p className="mt-1 text-xs text-slate-600">Clear the sale price to end the discount.</p>
           </div>
 
           <div>
-            <label className="block text-xs font-mono font-bold tracking-wider uppercase text-zinc-300 mb-2">
+            <label className="block text-xs font-mono font-bold tracking-wider uppercase text-slate-700 mb-2">
               Stock Quantity *
             </label>
             <input
@@ -259,18 +259,18 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
               value={stock}
               onChange={(e) => setStock(e.target.value)}
               placeholder="30"
-              className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500 font-mono"
+              className="w-full px-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 placeholder-zinc-600 focus:outline-none focus:border-rose-500 font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-mono font-bold tracking-wider uppercase text-zinc-300 mb-2">
+            <label className="block text-xs font-mono font-bold tracking-wider uppercase text-slate-700 mb-2">
               Category *
             </label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 focus:outline-none focus:border-rose-500"
+              className="w-full px-4 py-3 bg-[#fff] border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:border-rose-500"
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -287,16 +287,16 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
             id="isActive"
             checked={isActive}
             onChange={(e) => setIsActive(e.target.checked)}
-            className="w-4 h-4 rounded bg-zinc-950 border-zinc-800 text-rose-600 focus:ring-0"
+            className="w-4 h-4 rounded bg-[#fff] border-slate-200 text-red-800 focus:ring-0"
           />
-          <label htmlFor="isActive" className="text-xs font-bold text-zinc-300 cursor-pointer">
+          <label htmlFor="isActive" className="text-xs font-bold text-slate-700 cursor-pointer">
             Drop is Active (Visible on storefront & search catalog)
           </label>
         </div>
       </div>
 
       {/* Media Uploader Card */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800/80">
+      <div className="p-6 sm:p-8 rounded-lg bg-slate-50 border border-slate-200">
         <ProductImageUploader images={images} onChange={setImages} onUploading={setUploadingPhoto} />
       </div>
     </form>

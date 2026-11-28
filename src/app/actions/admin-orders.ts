@@ -58,30 +58,25 @@ export async function getAdminOrders(params?: {
     where.status = status as OrderStatus;
   }
 
-  const [orders, totalCount] = await Promise.all([
+  const [orders, counts] = await Promise.all([
     prisma.order.findMany({
       where,
       skip,
       take: limit,
       orderBy: { createdAt: "desc" },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        _count: {
-          select: { orderItems: true },
-        },
+      select: {
+        id: true, total: true, createdAt: true, status: true, paymentId: true, razorpayOrderId: true,
+        user: { select: { name: true, email: true } },
+        orderItems: { select: { id: true, quantity: true, priceAtPurchase: true, variant: true, product: { select: { name: true } } } },
       },
     }),
-    prisma.order.count({ where }),
+    prisma.order.groupBy({ by: ["status"], _count: true }),
   ]);
+  const totalCount = counts.reduce((sum, item) => sum + (!where.status || where.status === item.status ? item._count : 0), 0);
 
   return {
     orders,
+    counts,
     totalCount,
     totalPages: Math.ceil(totalCount / limit),
     currentPage: page,

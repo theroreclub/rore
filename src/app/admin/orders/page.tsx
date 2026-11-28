@@ -1,221 +1,54 @@
-import { getRequestSession } from "@/lib/auth-checks";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { OrderStatus } from "@prisma/client";
+import { ArrowUpRight, ShoppingBag } from "lucide-react";
 import { getAdminOrders } from "@/app/actions/admin-orders";
 import { formatPrice } from "@/lib/utils";
-import { Badge } from "@/components/ui/Badge";
-import Link from "next/link";
-import { ShoppingBag, ChevronRight, Filter } from "lucide-react";
-import { OrderStatus } from "@prisma/client";
+import { DetailDrawer } from "@/components/admin/DetailDrawer";
+import { SummaryRing } from "@/components/admin/SummaryRing";
 
-interface AdminOrdersPageProps {
-  searchParams: Promise<{
-    status?: string;
-    page?: string;
-  }>;
+const labels: Record<OrderStatus, string> = { PENDING:"Pending", PAID:"Paid", SHIPPED:"Shipped", DELIVERED:"Delivered", CANCELLED:"Cancelled" };
+const statuses = Object.values(OrderStatus);
+function ordersUrl(status: string, page = 1) {
+  const params = new URLSearchParams();
+  if (status) params.set("status", status);
+  if (page > 1) params.set("page", String(page));
+  return "/admin/orders" + (params.size ? "?" + params : "");
 }
 
-const STATUS_FILTERS = [
-  { label: "All Orders", value: "ALL" },
-  { label: "Paid", value: OrderStatus.PAID },
-  { label: "Shipped", value: OrderStatus.SHIPPED },
-  { label: "Delivered", value: OrderStatus.DELIVERED },
-  { label: "Pending", value: OrderStatus.PENDING },
-  { label: "Cancelled", value: OrderStatus.CANCELLED },
-];
-
-function getStatusBadge(status: OrderStatus) {
-  switch (status) {
-    case OrderStatus.PAID:
-      return <Badge variant="success">Paid</Badge>;
-    case OrderStatus.SHIPPED:
-      return <Badge variant="warning">Shipped</Badge>;
-    case OrderStatus.DELIVERED:
-      return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/80 border border-emerald-800/80 text-emerald-400 font-mono">
-          Delivered
-        </span>
-      );
-    case OrderStatus.PENDING:
-      return <Badge variant="secondary">Pending</Badge>;
-    case OrderStatus.CANCELLED:
-      return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-950/80 border border-rose-800/80 text-rose-400 font-mono">
-          Cancelled
-        </span>
-      );
-    default:
-      return <Badge variant="outline">{status}</Badge>;
-  }
-}
-
-export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageProps) {
-  const session = await getRequestSession();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    redirect("/");
-  }
-
-  const { status, page } = await searchParams;
-  const currentPage = Math.max(1, parseInt(page || "1", 10));
-
-  const { orders, totalCount, totalPages } = await getAdminOrders({
-    status,
-    page: currentPage,
-    limit: 10,
-  });
-
-  return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <span className="text-xs font-mono font-bold tracking-widest text-rose-500 uppercase">
-          FULFILLMENT // COMMERCE
-        </span>
-        <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight mt-1">
-          Orders & Dispatches
-        </h1>
-        <p className="text-xs text-zinc-400 mt-1">
-          Track customer purchases, fulfill shipments, and manage order lifecycles.
-        </p>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-        <Filter className="w-4 h-4 text-zinc-500 shrink-0 mr-1" />
-        {STATUS_FILTERS.map((f) => {
-          const isActive = (!status && f.value === "ALL") || status === f.value;
-          return (
-            <Link
-              key={f.value}
-              href={`/admin/orders${f.value === "ALL" ? "" : `?status=${f.value}`}`}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-mono uppercase tracking-wider whitespace-nowrap transition-all ${
-                isActive
-                  ? "bg-white text-zinc-950 font-black shadow-md"
-                  : "bg-zinc-900/60 border border-zinc-800 text-zinc-400 hover:text-white"
-              }`}
-            >
-              {f.label}
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Orders Table */}
-      <div className="rounded-3xl bg-zinc-900/40 border border-zinc-800/80 overflow-hidden">
-        {orders.length === 0 ? (
-          <div className="p-16 text-center space-y-3">
-            <ShoppingBag className="w-8 h-8 text-zinc-600 mx-auto" />
-            <p className="text-xs text-zinc-400 font-mono">No orders found matching this filter.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-950/80 text-zinc-400 uppercase font-mono tracking-wider border-b border-zinc-800">
-                <tr>
-                  <th className="py-4 px-6">Order ID</th>
-                  <th className="py-4 px-4">Customer</th>
-                  <th className="py-4 px-4">Date</th>
-                  <th className="py-4 px-4">Total</th>
-                  <th className="py-4 px-4">Status</th>
-                  <th className="py-4 px-4">Payment</th>
-                  <th className="py-4 px-6 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
-                {orders.map((order) => {
-                  const dateStr = new Date(order.createdAt).toLocaleDateString("en-IN", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  });
-
-                  return (
-                    <tr key={order.id} className="hover:bg-zinc-900/40 transition-colors">
-                      <td className="py-4 px-6 font-mono text-zinc-400 font-bold">
-                        <Link
-                          href={`/admin/orders/${order.id}`}
-                          className="hover:text-rose-400 transition-colors"
-                        >
-                          #{order.id.slice(-8).toUpperCase()}
-                        </Link>
-                      </td>
-
-                      <td className="py-4 px-4">
-                        <div>
-                          <span className="font-bold text-white block">
-                            {order.user.name || "Customer"}
-                          </span>
-                          <span className="font-mono text-[11px] text-zinc-500 block">
-                            {order.user.email}
-                          </span>
-                        </div>
-                      </td>
-
-                      <td className="py-4 px-4 font-mono text-zinc-400">{dateStr}</td>
-
-                      <td className="py-4 px-4 font-mono font-bold text-white">
-                        {formatPrice(order.total)}
-                      </td>
-
-                      <td className="py-4 px-4">{getStatusBadge(order.status)}</td>
-
-                      <td className="py-4 px-4 font-mono text-[11px] text-zinc-400">
-                        {order.paymentId ? (
-                          <span className="text-emerald-400 block truncate max-w-[120px]" title={order.paymentId}>
-                            {order.paymentId}
-                          </span>
-                        ) : order.razorpayOrderId ? (
-                          <span className="text-zinc-500 truncate max-w-[120px] block" title={order.razorpayOrderId}>
-                            {order.razorpayOrderId}
-                          </span>
-                        ) : (
-                          <span className="text-zinc-600">-</span>
-                        )}
-                      </td>
-
-                      <td className="py-4 px-6 text-right">
-                        <Link
-                          href={`/admin/orders/${order.id}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors text-xs font-mono font-bold"
-                        >
-                          <span>Manage</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="p-4 border-t border-zinc-800/60 flex items-center justify-between text-xs text-zinc-400 font-mono">
-            <span>
-              Page {currentPage} of {totalPages} ({totalCount} total orders)
-            </span>
-            <div className="flex items-center gap-2">
-              {currentPage > 1 && (
-                <Link
-                  href={`/admin/orders?page=${currentPage - 1}${status ? `&status=${status}` : ""}`}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-zinc-200 transition-colors"
-                >
-                  &larr; Prev
-                </Link>
-              )}
-              {currentPage < totalPages && (
-                <Link
-                  href={`/admin/orders?page=${currentPage + 1}${status ? `&status=${status}` : ""}`}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-zinc-200 transition-colors"
-                >
-                  Next &rarr;
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+export default async function AdminOrdersPage({ searchParams }: { searchParams: Promise<{ status?: string; page?: string }> }) {
+  const params = await searchParams;
+  const status = statuses.includes(params.status as OrderStatus) ? params.status as OrderStatus : "";
+  const page = Math.max(1, Math.min(100000, Math.floor(Number(params.page)) || 1));
+  const { orders, counts, totalCount, totalPages } = await getAdminOrders({ status, page, limit: 10 });
+  if (page > Math.max(1,totalPages)) redirect(ordersUrl(status, Math.max(1,totalPages)));
+  const count = (key: OrderStatus) => counts.find(group => group.status === key)?._count ?? 0;
+  const all = counts.reduce((sum, group) => sum + group._count, 0);
+  return <div className="admin-columns"><section className="admin-primary">
+    <header className="admin-heading"><h1>Orders <small>{all}</small></h1></header>
+    <nav className="admin-tabs" aria-label="Order status">{(["", ...statuses] as const).map(key =>
+      <Link key={key} aria-current={status === key ? "page" : undefined} href={ordersUrl(key)}>{key ? labels[key] : "All orders"}</Link>)}</nav>
+    <table className="work-table orders-table"><thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th><th>Placed</th></tr></thead>
+      <tbody>{orders.map(order => {
+        const number = "#" + order.id.slice(-8).toUpperCase();
+        const placed = order.createdAt.toLocaleDateString("en-IN", { day:"numeric", month:"short", year:"numeric", timeZone:"Asia/Kolkata" });
+        return <tr key={order.id}><td><DetailDrawer section="Order details" title={"Order " + number} className="record-link" trigger={number}>
+          <span className="status-pill" data-status={order.status}>{labels[order.status]}</span>
+          <h3>Order items</h3><ul className="drawer-items">{order.orderItems.map(item =>
+            <li key={item.id}><div><strong>{item.product.name}</strong><small>{item.variant}</small></div><span>{item.quantity} × {formatPrice(item.priceAtPurchase)}</span></li>)}</ul>
+          <dl className="admin-facts"><dt>Total</dt><dd>{formatPrice(order.total)}</dd><dt>Placed</dt><dd>{placed}</dd>
+            <dt>Customer</dt><dd>{order.user.name || "Customer"}</dd><dt>Email</dt><dd>{order.user.email}</dd>
+            <dt>Payment reference</dt><dd>{order.paymentId || order.razorpayOrderId || "Pending"}</dd></dl>
+          <Link className="admin-button solid" href={`/admin/orders/${order.id}`}>Manage order <ArrowUpRight size={15}/></Link>
+        </DetailDrawer></td><td>{order.user.name || order.user.email}</td><td><span className="status-pill" data-status={order.status}>{labels[order.status]}</span></td>
+        <td className="money">{formatPrice(order.total)}</td><td>{placed}</td></tr>;
+      })}</tbody></table>
+    {!orders.length && <div className="admin-empty"><ShoppingBag size={23} /><p>{status ? "No orders with this status." : "No orders yet."}</p></div>}
+    <footer className="work-pagination"><span>{totalCount} {totalCount === 1 ? "order" : "orders"} · Page {page} of {Math.max(1,totalPages)}</span>
+      {page > 1 && <Link href={ordersUrl(status,page-1)}>← Previous</Link>}{page < totalPages && <Link href={ordersUrl(status,page+1)}>Next →</Link>}</footer>
+    </section><aside className="admin-rail"><section><h2><ShoppingBag size={15}/>Fulfillment overview</h2>
+      <SummaryRing value={count("DELIVERED")} total={all} label="delivered"/>
+      <dl className="rail-values"><dt>All orders</dt><dd>{all}</dd><dt>Awaiting dispatch</dt><dd>{count("PAID")}</dd></dl>
+    </section><section><h2>Order status</h2>{statuses.map(key => <div key={key} className="category-meter"><div><span>{labels[key]}</span><strong>{count(key)}</strong></div><progress value={count(key)} max={all || 1} aria-label={labels[key]} /></div>)}</section></aside>
+  </div>;
 }
