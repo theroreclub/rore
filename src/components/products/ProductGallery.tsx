@@ -14,7 +14,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
 
   return (
     <div className="space-y-4">
-      <div className="relative aspect-square w-full overflow-hidden border bg-zinc-900">
+      <div className="relative aspect-square w-full overflow-hidden border bg-shop-card">
         <Image
           src={displayImages[selectedIndex] || displayImages[0]}
           alt={name}
@@ -40,7 +40,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
                 onClick={() => setSelectedIndex(idx)}
                 className={`relative aspect-[4/5] w-20 rounded-xl overflow-hidden transition-all duration-200 cursor-pointer ${
                   isSelected
-                    ? "ring-2 ring-accent ring-offset-2 ring-offset-black scale-105"
+                    ? "ring-2 ring-shop-wine ring-offset-2 ring-offset-shop-ivory scale-105"
                     : "glass opacity-70 hover:opacity-100"
                 }`}
               >

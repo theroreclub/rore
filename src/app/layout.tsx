@@ -42,7 +42,7 @@ export default function RootLayout({
         <Providers>
           <div className="relative z-10 flex min-h-screen flex-col">
             <Suspense fallback={null}><StorefrontOnly><Header /></StorefrontOnly></Suspense>
-            <main className="flex-1">{children}</main>
+            <main className="site-main flex-1">{children}</main>
             <Suspense fallback={null}><StorefrontOnly><Footer /></StorefrontOnly></Suspense>
           </div>
         </Providers>

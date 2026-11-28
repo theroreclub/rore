@@ -178,18 +178,18 @@ export function AddressManagement({
       {notice && <p role="status" className="text-sm">{notice}</p>}
       <div className="flex flex-wrap gap-3 items-center justify-between">
         <div>
-          <h3 className="text-base font-bold text-white uppercase tracking-wider font-mono">
+          <h3 className="text-base font-bold text-shop-ink uppercase tracking-wider">
             Delivery Addresses
           </h3>
-          <p className="text-xs text-zinc-400 mt-0.5">
-            Manage your saved shipping destinations for swift checkout.
+          <p className="text-xs text-shop-muted mt-0.5">
+            Choose where your orders are delivered.
           </p>
         </div>
 
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-white uppercase tracking-wider transition-colors"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-shop-soft hover:bg-shop-rule text-xs font-bold text-shop-ink uppercase tracking-wider transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Add Address</span>
@@ -197,31 +197,24 @@ export function AddressManagement({
       </div>
 
       {addresses.length === 0 ? (
-        <div className="p-8 rounded-2xl bg-zinc-900/30 border border-dashed border-zinc-800 text-center">
-          <MapPin className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
-          <p className="text-xs text-zinc-400 font-medium">No saved addresses found.</p>
-          <button
-            type="button"
-            onClick={openCreateModal}
-            className="mt-3 text-xs text-rose-400 hover:underline font-bold"
-          >
-            + Add your primary shipping address
-          </button>
+        <div className="p-8 rounded-md bg-shop-card border border-dashed border-shop-rule text-center">
+          <MapPin className="w-8 h-8 text-shop-muted mx-auto mb-2" />
+          <p className="text-xs text-shop-muted font-medium">No saved addresses yet.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {addresses.map((addr) => (
             <div
               key={addr.id}
-              className={`p-5 rounded-2xl border transition-all flex flex-col justify-between gap-4 ${
+              className={`p-5 rounded-md border transition-all flex flex-col justify-between gap-4 ${
                 addr.isDefault
-                  ? "bg-zinc-900/70 border-rose-500/50 shadow-lg shadow-rose-950/10"
-                  : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700"
+                  ? "bg-shop-card border-shop-wine shadow-lg shadow-rose-950/10"
+                  : "bg-shop-card border-shop-rule hover:border-shop-rule"
               }`}
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-zinc-100">{addr.fullName}</span>
+                  <span className="font-bold text-sm text-shop-ink">{addr.fullName}</span>
                   {addr.isDefault && (
                     <Badge variant="success" className="text-[10px]">
                       Default
@@ -229,28 +222,28 @@ export function AddressManagement({
                   )}
                 </div>
 
-                <div className="text-xs text-zinc-400 space-y-0.5">
-                  <p className="text-zinc-300">{addr.street}</p>
+                <div className="text-xs text-shop-muted space-y-0.5">
+                  <p className="text-shop-ink">{addr.street}</p>
                   <p>
                     {addr.city}, {addr.state} {addr.postalCode}
                   </p>
                   <p>{addr.country}</p>
-                  {addr.phone && <p className="text-zinc-500 mt-1 font-mono"><a className="contact-link" href={`tel:${addr.phone.replace(/[^+0-9]/g, "")}`}>{addr.phone}</a></p>}
+                  {addr.phone && <p className="text-shop-muted mt-1"><a className="contact-link" href={`tel:${addr.phone.replace(/[^+0-9]/g, "")}`}>{addr.phone}</a></p>}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-zinc-800/60 text-xs">
+              <div className="flex items-center justify-between pt-3 border-t border-shop-rule text-xs">
                 {!addr.isDefault ? (
                   <button
                     type="button"
                     onClick={() => handleSetDefault(addr.id)}
-                    className="text-zinc-400 hover:text-white transition-colors"
+                    className="text-shop-muted hover:text-shop-ink transition-colors"
                   >
                     Set as Default
                   </button>
                 ) : (
-                  <span className="text-zinc-500 text-[11px] flex items-center gap-1">
-                    <Check className="w-3 h-3 text-emerald-400" />
+                  <span className="text-shop-muted text-[11px] flex items-center gap-1">
+                    <Check className="w-3 h-3 text-emerald-800" />
                     Primary
                   </span>
                 )}
@@ -259,7 +252,7 @@ export function AddressManagement({
                   <button
                     type="button"
                     onClick={() => openEditModal(addr)}
-                    className="text-zinc-400 hover:text-white p-1"
+                    className="text-shop-muted hover:text-shop-ink p-1"
                     title="Edit address"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
@@ -267,7 +260,7 @@ export function AddressManagement({
                   <button
                     type="button"
                     onClick={() => handleDelete(addr.id)}
-                    className="text-zinc-500 hover:text-rose-400 p-1"
+                    className="text-shop-muted hover:text-shop-wine p-1"
                     title="Delete address"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -281,28 +274,28 @@ export function AddressManagement({
 
       {/* Address Form Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-lg p-6 sm:p-8 rounded-3xl bg-zinc-900 border border-zinc-800 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#261116]/55 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-lg p-6 sm:p-8 rounded-lg bg-shop-card border border-shop-rule shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               aria-label="Close address form" onClick={() => setIsModalOpen(false)}
-              className="absolute top-5 right-5 text-zinc-400 hover:text-white p-1"
+              className="absolute top-5 right-5 text-shop-muted hover:text-shop-ink p-1"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-xl font-bold text-white uppercase tracking-tight">
+            <h3 className="text-xl font-bold text-shop-ink uppercase tracking-tight">
               {editingAddress ? "Edit Delivery Address" : "Add New Address"}
             </h3>
 
             {error && (
-              <div role="alert" className="mt-4 p-3 rounded-xl bg-rose-950/60 border border-rose-800 text-xs text-rose-300">
+              <div role="alert" className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-shop-wine">
                 {error}
               </div>
             )}
 
             <form onSubmit={async event => { try { await handleSubmit(event); } catch { setError("Couldn’t save the address. Please try again."); setIsSubmitting(false); } }} className="mt-6 space-y-4">
               <div>
-                <label htmlFor="delivery-fullName" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                <label htmlFor="delivery-fullName" className="block text-xs font-semibold uppercase tracking-wider text-shop-ink mb-1">
                   Recipient Full Name *
                 </label>
                 <input id="delivery-fullName"
@@ -311,12 +304,12 @@ export function AddressManagement({
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
 
-                  className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
+                  className="w-full px-3.5 py-2.5 bg-shop-soft border border-shop-rule rounded-xl text-sm text-shop-ink placeholder-shop-muted focus:outline-none focus:border-shop-wine"
                 />
               </div>
 
               <div>
-                <label htmlFor="delivery-phone" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                <label htmlFor="delivery-phone" className="block text-xs font-semibold uppercase tracking-wider text-shop-ink mb-1">
                   Phone Number (For Delivery Updates) *
                 </label>
                 <input id="delivery-phone"
@@ -325,12 +318,12 @@ export function AddressManagement({
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
 
-                  className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
+                  className="w-full px-3.5 py-2.5 bg-shop-soft border border-shop-rule rounded-xl text-sm text-shop-ink placeholder-shop-muted focus:outline-none focus:border-shop-wine"
                 />
               </div>
 
               <div>
-                <label htmlFor="delivery-street" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                <label htmlFor="delivery-street" className="block text-xs font-semibold uppercase tracking-wider text-shop-ink mb-1">
                   Street Address & Flat / Building *
                 </label>
                 <input id="delivery-street"
@@ -339,13 +332,13 @@ export function AddressManagement({
                   value={formData.street}
                   onChange={(e) => setFormData({ ...formData, street: e.target.value })}
 
-                  className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
+                  className="w-full px-3.5 py-2.5 bg-shop-soft border border-shop-rule rounded-xl text-sm text-shop-ink placeholder-shop-muted focus:outline-none focus:border-shop-wine"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="delivery-city" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                  <label htmlFor="delivery-city" className="block text-xs font-semibold uppercase tracking-wider text-shop-ink mb-1">
                     City *
                   </label>
                   <input id="delivery-city"
@@ -354,12 +347,12 @@ export function AddressManagement({
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
 
-                    className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
+                    className="w-full px-3.5 py-2.5 bg-shop-soft border border-shop-rule rounded-xl text-sm text-shop-ink placeholder-shop-muted focus:outline-none focus:border-shop-wine"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="delivery-state" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                  <label htmlFor="delivery-state" className="block text-xs font-semibold uppercase tracking-wider text-shop-ink mb-1">
                     State / Region *
                   </label>
                   <input id="delivery-state"
@@ -368,14 +361,14 @@ export function AddressManagement({
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
 
-                    className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
+                    className="w-full px-3.5 py-2.5 bg-shop-soft border border-shop-rule rounded-xl text-sm text-shop-ink placeholder-shop-muted focus:outline-none focus:border-shop-wine"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="delivery-postalCode" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                  <label htmlFor="delivery-postalCode" className="block text-xs font-semibold uppercase tracking-wider text-shop-ink mb-1">
                     PIN / Postal Code *
                   </label>
                   <input id="delivery-postalCode"
@@ -384,12 +377,12 @@ export function AddressManagement({
                     value={formData.postalCode}
                     onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
 
-                    className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
+                    className="w-full px-3.5 py-2.5 bg-shop-soft border border-shop-rule rounded-xl text-sm text-shop-ink placeholder-shop-muted focus:outline-none focus:border-shop-wine"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="delivery-country" className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-1">
+                  <label htmlFor="delivery-country" className="block text-xs font-semibold uppercase tracking-wider text-shop-ink mb-1">
                     Country *
                   </label>
                   <input id="delivery-country"
@@ -397,7 +390,7 @@ export function AddressManagement({
                     required
                     value={formData.country}
                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 focus:outline-none focus:border-rose-500"
+                    className="w-full px-3.5 py-2.5 bg-shop-soft border border-shop-rule rounded-xl text-sm text-shop-ink focus:outline-none focus:border-shop-wine"
                   />
                 </div>
               </div>
@@ -408,25 +401,25 @@ export function AddressManagement({
                   id="isDefault"
                   checked={formData.isDefault}
                   onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-                  className="w-4 h-4 rounded bg-zinc-950 border-zinc-800 text-rose-600 focus:ring-0"
+                  className="w-4 h-4 rounded bg-shop-soft border-shop-rule text-shop-wine focus:ring-0"
                 />
-                <label htmlFor="isDefault" className="text-xs text-zinc-300 cursor-pointer">
+                <label htmlFor="isDefault" className="text-xs text-shop-ink cursor-pointer">
                   Set as my default shipping address
                 </label>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
+              <div className="flex justify-end gap-3 pt-4 border-t border-shop-rule">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-300 uppercase transition-colors"
+                  className="px-4 py-2.5 rounded-xl bg-shop-soft hover:bg-shop-rule text-xs font-bold text-shop-ink uppercase transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-black uppercase tracking-wider transition-all disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-shop-wine hover:bg-[#41151b] text-shop-ivory text-xs font-black uppercase tracking-wider transition-all disabled:opacity-50"
                 >
                   {isSubmitting ? "Saving..." : "Save Address"}
                 </button>

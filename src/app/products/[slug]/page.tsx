@@ -35,13 +35,13 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   ).slice(0, 4);
 
   return (
-    <div className="store-shell space-y-10 py-8 pb-16 sm:py-12">
+    <div className="shop-page store-shell space-y-10 py-8 pb-16 sm:py-12">
       <Link href="/products" className="store-text-link">All merch</Link>
       <div className="grid items-start gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
         <ProductGallery images={product.images} name={product.name} />
         <div>
           <ProductBuyingPanel key={id} product={{ id, slug, name, description, price, regularPrice, stock, images, category }} options={options} preview={preview} />
-          {liveCatalogInSandbox && <p className="mt-4 text-sm text-zinc-300">You can save this item to your bag. Checkout opens when the store goes live.</p>}
+          {liveCatalogInSandbox && <p className="mt-4 text-sm text-shop-ink">You can save this item to your bag. Checkout opens when the store goes live.</p>}
         </div>
       </div>
       {related.length > 0 && (

@@ -2,12 +2,12 @@ import { Skeleton } from "@/components/ui/Skeleton";
 
 export default function ProductDetailLoading() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+    <div className="shop-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
       <Skeleton className="h-4 w-32 mb-8" />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
         {/* Left: Image skeleton */}
-        <div className="w-full aspect-square rounded-3xl border border-zinc-800 bg-zinc-900/40 p-4">
-          <Skeleton className="w-full h-full rounded-2xl" />
+        <div className="w-full aspect-square rounded-lg border border-shop-rule bg-shop-card p-4">
+          <Skeleton className="w-full h-full rounded-md" />
         </div>
 
         {/* Right: Info skeleton */}
@@ -20,7 +20,7 @@ export default function ProductDetailLoading() {
             <Skeleton className="h-4 w-5/6" />
             <Skeleton className="h-4 w-2/3" />
           </div>
-          <Skeleton className="h-14 w-full rounded-2xl mt-8" />
+          <Skeleton className="h-14 w-full rounded-md mt-8" />
         </div>
       </div>
     </div>

@@ -66,8 +66,8 @@ export function ProductBuyingPanel({ product, options, preview }: ProductBuyingP
         <Link className="store-text-link" href={`/products?category=${product.category.slug}`}>{product.category.name}</Link>
       )}
       <h1 className="display-type text-5xl uppercase sm:text-6xl">{product.name}</h1>
-      <p className="text-2xl font-extrabold text-accent"><ProductPrice price={product.price} regularPrice={product.regularPrice} /></p>
-      <p className="text-base leading-relaxed text-zinc-300">{product.description}</p>
+      <p className="text-2xl font-extrabold text-shop-wine"><ProductPrice price={product.price} regularPrice={product.regularPrice} /></p>
+      <p className="text-base leading-relaxed text-shop-ink">{product.description}</p>
 
       {options.length > 0 && (
         <VariantPicker options={variants} colour={colour} size={size} select={(nextColour, nextSize) => {
@@ -90,20 +90,20 @@ export function ProductBuyingPanel({ product, options, preview }: ProductBuyingP
       )}
 
       {!canBuy && (
-        <p role="status" className="text-sm text-zinc-300">
+        <p role="status" className="text-sm text-shop-ink">
           {stock <= 0 || (!preview && !options.length) ? "Currently unavailable." : "You’ve reached the quantity limit for this option."}
         </p>
       )}
       {feedback && (
         <p role="status" className="flex flex-wrap items-center gap-2 text-sm">
-          {feedback.success && <Check className="size-4 text-accent" />}
+          {feedback.success && <Check className="size-4 text-shop-wine" />}
           {feedback.text}
           {feedback.success && <Link href="/cart" className="store-text-link">View bag</Link>}
         </p>
       )}
-      {preview && <p className="text-sm text-zinc-400">Sample product. Checkout is disabled in the storefront preview.</p>}
-      <div className="flex items-center gap-2 border-t pt-5 text-sm text-zinc-300">
-        <Truck className="size-5 text-accent" />
+      {preview && <p className="text-sm text-shop-muted">Sample product. Checkout is disabled in the storefront preview.</p>}
+      <div className="flex items-center gap-2 border-t pt-5 text-sm text-shop-ink">
+        <Truck className="size-5 text-shop-wine" />
         Printed to order · Free shipping over {formatPrice(SHIPPING_CONFIG.FREE_SHIPPING_THRESHOLD)}
       </div>
     </div>

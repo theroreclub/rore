@@ -52,20 +52,20 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     const cards = products.map(({ id, name, slug, price, regularPrice, stock, images, category }) => ({
       id, name, slug, price, regularPrice, stock, images, category,
     }));
-    return <div className="store-shell py-8 sm:py-12 space-y-8">
+    return <div className="shop-page store-shell py-8 sm:py-12 space-y-8">
       <h1 className="display-type text-5xl uppercase sm:text-7xl">Wishlist</h1>
       <WishlistGrid products={cards} />
     </div>;
   }
 
   return (
-    <div className="store-shell py-8 sm:py-12 space-y-8">
+    <div className="shop-page store-shell py-8 sm:py-12 space-y-8">
       {/* Catalog Title Banner */}
       <div className="space-y-2">
         <h1 className="display-type text-5xl uppercase sm:text-7xl">
           {activeCategoryObj ? activeCategoryObj.name : "All merch"}
         </h1>
-        <p className="text-sm text-text-secondary max-w-xl">
+        <p className="text-sm text-shop-muted max-w-xl">
           Anime-inspired tees, graphic hoodies, and accessories printed to order.
         </p>
       </div>
@@ -82,7 +82,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
 
       {/* Products Grid */}
       <div className="pt-2">
-        <div className="flex items-center justify-between text-xs text-zinc-500 font-mono mb-4">
+        <div className="flex items-center justify-between text-xs text-shop-muted mb-4">
           <span>SHOWING {products.length} {products.length === 1 ? "PIECE" : "PIECES"}</span>
           {search && (
             <span>

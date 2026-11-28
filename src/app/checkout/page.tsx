@@ -99,21 +99,18 @@ export default async function CheckoutPage() {
   }));
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 space-y-8">
+    <div className="shop-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 space-y-8">
       {/* Checkout Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-6 border-b border-zinc-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-6 border-b border-shop-rule">
         <div>
-          <span className="text-xs font-mono font-bold tracking-widest text-rose-500 uppercase">
-            SECURE CHECKOUT // STEP 2 OF 2
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tight mt-1">
-            Order Finalization
+          <h1 className="text-3xl sm:text-4xl font-black text-shop-ink uppercase tracking-tight mt-1">
+            Checkout
           </h1>
         </div>
 
         <Link
           href="/cart"
-          className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-shop-muted hover:text-shop-ink transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Return to Bag

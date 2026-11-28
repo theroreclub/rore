@@ -12,13 +12,13 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const variantStyles = {
-    default: "glass text-white border-white/20",
-    secondary: "glass text-white/70 border-white/10",
-    success: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 backdrop-blur-md",
-    warning: "bg-amber-500/15 text-amber-400 border border-amber-500/30 backdrop-blur-md",
-    destructive: "bg-rose-500/15 text-rose-400 border border-rose-400/30 backdrop-blur-md",
-    outline: "glass border-white/30 text-white",
-    gold: "bg-accent/15 text-accent border border-accent/40 backdrop-blur-md",
+    default: "glass text-shop-ink border-shop-rule",
+    secondary: "glass text-shop-muted border-shop-rule",
+    success: "bg-emerald-500/15 text-emerald-800 border border-emerald-500/30 backdrop-blur-md",
+    warning: "bg-amber-500/15 text-amber-900 border border-amber-500/30 backdrop-blur-md",
+    destructive: "bg-rose-500/15 text-shop-wine border border-rose-400/30 backdrop-blur-md",
+    outline: "glass border-shop-rule text-shop-ink",
+    gold: "bg-accent/15 text-shop-wine border border-accent/40 backdrop-blur-md",
   };
 
   return (

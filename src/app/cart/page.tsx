@@ -37,10 +37,10 @@ export default function CartPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-mono tracking-widest text-white/60 uppercase mt-4">
-          UPDATING YOUR BAG...
+      <div className="shop-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="w-8 h-8 border-2 border-shop-wine border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs tracking-widest text-shop-muted uppercase mt-4">
+          Updating your bag…
         </p>
       </div>
     );
@@ -48,28 +48,25 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <div className="shop-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         {feedback}
-        <div className="max-w-md mx-auto text-center flex flex-col items-center p-8 sm:p-12 rounded-3xl glass">
-          <div className="w-20 h-20 rounded-2xl glass flex items-center justify-center text-accent mb-6 shadow-xl">
+        <div className="max-w-md mx-auto text-center flex flex-col items-center p-8 sm:p-12 rounded-lg glass">
+          <div className="w-20 h-20 rounded-md glass flex items-center justify-center text-shop-wine mb-6 shadow-xl">
             <ShoppingBag className="w-10 h-10" />
           </div>
 
-          <span className="text-[10px] font-mono font-bold tracking-widest text-accent uppercase">
-            SHOPPING BAG // EMPTY
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight mt-1">
-            Your Bag is Empty
+          <h1 className="text-2xl sm:text-3xl font-black text-shop-ink uppercase tracking-tight mt-1">
+            Your bag is empty
           </h1>
-          <p className="text-xs sm:text-sm text-text-secondary mt-3 leading-relaxed">
-            Looks like you haven&apos;t added any drops yet. Discover our limited heavyweight streetwear, graphic anime hoodies, and accessories.
+          <p className="text-xs sm:text-sm text-shop-muted mt-3 leading-relaxed">
+            Find your next tee, hoodie, or accessory in the collection.
           </p>
 
           <Link
             href="/products"
-            className="mt-8 inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white hover:bg-zinc-200 text-black font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-white/5 group"
+            className="mt-8 inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-shop-wine hover:bg-[#41151b] text-shop-ivory font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-white/5 group"
           >
-            <span>Explore All Drops</span>
+            <span>Browse merch</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -78,22 +75,22 @@ export default function CartPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14">
+    <div className="shop-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14">
       {feedback}
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-6 border-b border-white/[0.08] mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-6 border-b border-shop-rule mb-8">
         <div>
-          <span className="text-xs font-mono font-bold tracking-widest text-accent uppercase">
-            BAG // {itemCount} {itemCount === 1 ? "PIECE" : "PIECES"}
+          <span className="text-xs font-bold tracking-widest text-shop-wine uppercase">
+            {itemCount} {itemCount === 1 ? "PIECE" : "PIECES"}
           </span>
-          <h1 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tight mt-1">
-            Shopping Cart
+          <h1 className="text-3xl sm:text-4xl font-black text-shop-ink uppercase tracking-tight mt-1">
+            Shopping bag
           </h1>
         </div>
 
         <Link
           href="/products"
-          className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-white/70 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-shop-muted hover:text-shop-ink transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Continue Shopping
@@ -111,7 +108,7 @@ export default function CartPage() {
             return (
               <div
                 key={item.id}
-                className="p-4 sm:p-6 rounded-2xl glass flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 transition-all hover:border-white/30"
+                className="p-4 sm:p-6 rounded-md glass flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 transition-all hover:border-shop-rule"
               >
                 {/* Product Thumbnail & Details */}
                 <div className="flex items-center gap-4 w-full sm:w-auto">
@@ -130,17 +127,17 @@ export default function CartPage() {
                   <div className="space-y-1 min-w-0">
                     <Link
                       href={`/products/${item.product.slug}`}
-                      className="font-bold text-sm sm:text-base text-white hover:text-accent transition-colors line-clamp-1"
+                      className="font-bold text-sm sm:text-base text-shop-ink hover:text-shop-wine transition-colors line-clamp-1"
                     >
                       {item.product.name}
                     </Link>
-                    <p className="text-xs text-text-secondary font-mono">
+                    <p className="text-xs text-shop-muted">
                       {item.variant && <>{item.variant} · </>}
                       Unit: {formatPrice(item.product.price)}
                     </p>
 
                     {isAtMaxStock && (
-                      <p className="text-[11px] font-mono text-amber-400">
+                      <p className="text-[11px] text-amber-900">
                         Quantity limit reached
                       </p>
                     )}
@@ -148,7 +145,7 @@ export default function CartPage() {
                 </div>
 
                 {/* Stepper + Line Total + Remove */}
-                <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-white/[0.08]">
+                <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-shop-rule">
                   {/* Quantity Stepper */}
                   <div className="flex items-center gap-2 p-1 rounded-xl glass">
                     <button
@@ -156,12 +153,12 @@ export default function CartPage() {
                       onClick={() => changeBag(() => updateQuantity(item.productId, item.quantity - 1, item.variant), "Quantity updated.")}
                       disabled={pending || item.quantity <= 1}
                       aria-label="Decrease quantity"
-                      className="p-1 rounded-lg text-white/60 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="p-1 rounded-lg text-shop-muted hover:text-shop-ink hover:bg-shop-soft disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       <Minus className="w-3.5 h-3.5" />
                     </button>
 
-                    <span className="w-7 text-center font-mono font-bold text-xs text-white">
+                    <span className="w-7 text-center font-bold text-xs text-shop-ink">
                       {item.quantity}
                     </span>
 
@@ -170,7 +167,7 @@ export default function CartPage() {
                       onClick={() => changeBag(() => updateQuantity(item.productId, item.quantity + 1, item.variant), "Quantity updated.")}
                       disabled={pending || isAtMaxStock}
                       aria-label="Increase quantity"
-                      className="p-1 rounded-lg text-white/60 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="p-1 rounded-lg text-shop-muted hover:text-shop-ink hover:bg-shop-soft disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
@@ -178,7 +175,7 @@ export default function CartPage() {
 
                   {/* Line Total */}
                   <div className="text-right min-w-[90px]">
-                    <span className="font-mono font-bold text-sm sm:text-base text-white">
+                    <span className="font-bold text-sm sm:text-base text-shop-ink">
                       {formatPrice(lineTotal)}
                     </span>
                   </div>
@@ -190,7 +187,7 @@ export default function CartPage() {
                     onClick={() => changeBag(() => removeItem(item.productId, item.variant), "Item removed from your bag.")}
                     title="Remove item"
                     aria-label={`Remove ${item.product.name}`}
-                    className="p-2 rounded-xl text-white/50 hover:text-accent hover:bg-white/10 transition-colors"
+                    className="p-2 rounded-xl text-shop-muted hover:text-shop-wine hover:bg-shop-soft transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -201,39 +198,39 @@ export default function CartPage() {
         </div>
 
         {/* Order Summary Sidebar in .glass-strong */}
-        <div className="lg:col-span-4 p-6 sm:p-8 rounded-3xl glass-strong space-y-6 sticky top-24">
-          <h2 className="text-base font-bold text-white uppercase tracking-wider font-mono">
+        <div className="lg:col-span-4 p-6 sm:p-8 rounded-lg glass-strong space-y-6 sticky top-24">
+          <h2 className="text-base font-bold text-shop-ink uppercase tracking-wider">
             Order Summary
           </h2>
 
-          <div className="space-y-3 text-xs border-b border-white/[0.08] pb-6">
-            <div className="flex justify-between text-white/70">
+          <div className="space-y-3 text-xs border-b border-shop-rule pb-6">
+            <div className="flex justify-between text-shop-muted">
               <span>Subtotal ({itemCount} {itemCount === 1 ? "item" : "items"})</span>
-              <span className="font-mono font-bold text-white">{formatPrice(subtotal)}</span>
+              <span className="font-bold text-shop-ink">{formatPrice(subtotal)}</span>
             </div>
 
-            <div className="flex justify-between text-white/70">
+            <div className="flex justify-between text-shop-muted">
               <span>Estimated Shipping</span>
-              <span className="font-mono text-white font-bold">
+              <span className="text-shop-ink font-bold">
                 {shippingFee === 0 ? (
-                  <span className="text-emerald-400 uppercase text-[11px] font-bold">Free</span>
+                  <span className="text-emerald-800 uppercase text-[11px] font-bold">Free</span>
                 ) : (
                   formatPrice(shippingFee)
                 )}
               </span>
             </div>
 
-            <div className="flex justify-between text-white/70">
+            <div className="flex justify-between text-shop-muted">
               <span>Estimated Taxes</span>
-              <span className="font-mono text-white/60">Included</span>
+              <span className="text-shop-muted">Included</span>
             </div>
           </div>
 
           <div className="flex justify-between items-baseline">
-            <span className="text-sm font-bold uppercase tracking-wider text-white">
+            <span className="text-sm font-bold uppercase tracking-wider text-shop-ink">
               Total
             </span>
-            <span className="text-2xl font-black text-white font-mono tracking-tight">
+            <span className="text-2xl font-black text-shop-ink tracking-tight">
               {formatPrice(subtotal + shippingFee)}
             </span>
           </div>
@@ -241,27 +238,27 @@ export default function CartPage() {
           {/* Checkout Button */}
           <div className="space-y-2">
             {isPreview ? (
-              <p className="border p-3 text-center text-sm text-zinc-300">Checkout is disabled in the storefront preview.</p>
+              <p className="border p-3 text-center text-sm text-shop-ink">Checkout is disabled in the storefront preview.</p>
             ) : <Link
               href="/checkout"
-              className="w-full py-4 px-6 rounded-full bg-white hover:bg-zinc-200 text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-white/5 transition-all group"
+              className="w-full py-4 px-6 rounded-full bg-shop-wine hover:bg-[#41151b] text-shop-ivory font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-white/5 transition-all group"
             >
               <span>Proceed to Checkout</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>}
-            <p className="text-[11px] text-center text-white/50 font-mono">
+            <p className="text-[11px] text-center text-shop-muted">
               ⚡ Free shipping on orders over ₹1,999.
             </p>
           </div>
 
           {/* Trust Guarantees */}
-          <div className="space-y-3 pt-4 border-t border-white/[0.08] text-xs text-white/70">
+          <div className="space-y-3 pt-4 border-t border-shop-rule text-xs text-shop-muted">
             <div className="flex items-center gap-2">
-              <Truck className="w-3.5 h-3.5 text-accent shrink-0" />
+              <Truck className="w-3.5 h-3.5 text-shop-wine shrink-0" />
               <span>Ships across India</span>
             </div>
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-800 shrink-0" />
               <span>Secure Razorpay checkout</span>
             </div>
           </div>

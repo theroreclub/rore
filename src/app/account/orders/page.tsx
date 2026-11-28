@@ -40,21 +40,18 @@ export default async function OrderHistoryPage() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-8">
+    <div className="shop-page max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-8">
       {/* Header & Back */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 pb-6 border-b border-zinc-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 pb-6 border-b border-shop-rule">
         <div>
-          <span className="text-xs font-mono font-bold tracking-widest text-rose-500 uppercase">
-            ARCHIVE // PAST TRANSACTIONS
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tight mt-1">
-            Order History
+          <h1 className="text-3xl sm:text-4xl font-black text-shop-ink uppercase tracking-tight mt-1">
+            Order history
           </h1>
         </div>
 
         <Link
           href="/account"
-          className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-shop-muted hover:text-shop-ink transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Account
@@ -62,19 +59,19 @@ export default async function OrderHistoryPage() {
       </div>
 
       {orders.length === 0 ? (
-        <div className="p-12 sm:p-16 rounded-3xl bg-zinc-900/40 border border-zinc-800/80 text-center max-w-md mx-auto">
-          <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 mx-auto mb-4">
+        <div className="p-12 sm:p-16 rounded-lg bg-shop-card border border-shop-rule text-center max-w-md mx-auto">
+          <div className="w-16 h-16 rounded-md bg-shop-card border border-shop-rule flex items-center justify-center text-shop-muted mx-auto mb-4">
             <PackageOpen className="w-8 h-8" />
           </div>
-          <h2 className="text-lg font-bold text-white uppercase tracking-tight">
-            No Orders Placed Yet
+          <h2 className="text-lg font-bold text-shop-ink uppercase tracking-tight">
+            No orders yet
           </h2>
-          <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
-            You haven&apos;t checked out any streetwear or anime drops yet. Explore our current collections.
+          <p className="text-xs text-shop-muted mt-2 leading-relaxed">
+            Your receipts and delivery updates will appear here after your first order.
           </p>
           <Link
             href="/products"
-            className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-black uppercase tracking-wider transition-all"
+            className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-shop-wine hover:bg-[#41151b] text-shop-ivory text-xs font-black uppercase tracking-wider transition-all"
           >
             <span>Explore Drops</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -89,11 +86,11 @@ export default async function OrderHistoryPage() {
             return (
               <div
                 key={order.id}
-                className="p-6 rounded-3xl bg-zinc-900/50 border border-zinc-800/80 hover:border-zinc-700/80 transition-colors flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
+                className="p-6 rounded-lg bg-shop-card border border-shop-rule hover:border-shop-rule transition-colors flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
               >
                 <div className="space-y-3 min-w-0">
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="font-mono text-sm font-bold text-white">
+                    <span className="text-sm font-bold text-shop-ink">
                       #{order.id.slice(-8).toUpperCase()}
                     </span>
                     <Badge
@@ -114,7 +111,7 @@ export default async function OrderHistoryPage() {
                     {order.orderItems.slice(0, 4).map((item, idx) => (
                       <div
                         key={idx}
-                        className="relative w-12 h-12 rounded-lg bg-zinc-950 border border-zinc-800 overflow-hidden shrink-0"
+                        className="relative w-12 h-12 rounded-lg bg-shop-soft border border-shop-rule overflow-hidden shrink-0"
                         title={item.product.name}
                       >
                         <Image
@@ -126,13 +123,13 @@ export default async function OrderHistoryPage() {
                       </div>
                     ))}
                     {order.orderItems.length > 4 && (
-                      <div className="w-12 h-12 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs text-zinc-300 font-bold shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-shop-soft border border-shop-rule flex items-center justify-center text-xs text-shop-ink font-bold shrink-0">
                         +{order.orderItems.length - 4}
                       </div>
                     )}
                   </div>
 
-                  <div className="text-xs text-zinc-400 font-mono">
+                  <div className="text-xs text-shop-muted">
                     <span>
                       {new Date(order.createdAt).toLocaleDateString("en-IN", {
                         day: "numeric",
@@ -145,14 +142,14 @@ export default async function OrderHistoryPage() {
                   </div>
                 </div>
 
-                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-4 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 border-zinc-800/60 shrink-0">
-                  <span className="text-xl font-black text-white font-mono">
+                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-4 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 border-shop-rule shrink-0">
+                  <span className="text-xl font-black text-shop-ink">
                     {formatPrice(order.total)}
                   </span>
 
                   <Link
                     href={`/orders/${order.id}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-white uppercase tracking-wider transition-colors"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-shop-soft hover:bg-shop-rule text-xs font-bold text-shop-ink uppercase tracking-wider transition-colors"
                   >
                     <span>View Receipt</span>
                     <ArrowRight className="w-3.5 h-3.5" />
