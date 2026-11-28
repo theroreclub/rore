@@ -3,9 +3,9 @@ import Link from "next/link";
 import { CreditCard, Shirt, Truck } from "lucide-react";
 import { connection } from "next/server";
 import { ProductGrid } from "@/components/products/ProductGrid";
-import { prisma } from "@/lib/prisma";
-import { featuredSlugs, previewProducts } from "@/lib/preview-catalog";
-import { getAvailableVariants } from "@/lib/validations/variants";
+import { Suspense } from "react";
+import { publicProducts } from "@/lib/public-catalog";
+import { featuredSlugs } from "@/lib/preview-catalog";
 
 const collections = [
   { label: "Anime", slug: "anime-oversized", image: "/images/products/shibuya-ghost-tee.webp" },
@@ -14,28 +14,20 @@ const collections = [
   { label: "Fandom", slug: "fandom", image: "/images/products/arcade-night-tee.webp" },
 ];
 
-async function getFeaturedProducts() {
-  if (!process.env.DATABASE_URL) return previewProducts.slice(0, 4);
-
-  const products = await prisma.product.findMany({
-    where: { isActive: true },
-    take: 16,
-    orderBy: { createdAt: "desc" },
-    include: { category: { select: { name: true, slug: true } } },
-  });
+async function FeaturedProducts() {
+  await connection();
+  const products = (await publicProducts()).slice(0, 16);
   const rank = (slug: string) => {
     const index = featuredSlugs.indexOf(slug);
     return index < 0 ? featuredSlugs.length : index;
   };
-  return products
-    .map((product) => ({ ...product, stock: getAvailableVariants(product.qikinkVariants).length ? 20 : 0 }))
+  const featured = products
     .sort((a, b) => b.stock - a.stock || rank(a.slug) - rank(b.slug))
     .slice(0, 4);
+  return <ProductGrid products={featured} />;
 }
 
-export default async function HomePage() {
-  await connection();
-  const products = await getFeaturedProducts();
+export default function HomePage() {
 
   return (
     <div className="store-home">
@@ -72,7 +64,7 @@ export default async function HomePage() {
           <h2 className="display-type">New arrivals</h2>
           <Link href="/products" className="store-text-link">View all merch</Link>
         </div>
-        <ProductGrid products={products} />
+        <Suspense fallback={<div className="min-h-48" aria-label="Loading new arrivals" />}><FeaturedProducts /></Suspense>
       </section>
 
       <section id="collections" className="store-shell store-section collections-section">

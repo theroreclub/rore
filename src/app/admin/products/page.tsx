@@ -1,262 +1,117 @@
-import { auth } from "@/auth";
+import { getRequestSession } from "@/lib/auth-checks";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
-import { Badge } from "@/components/ui/Badge";
 import { AdminProductRowActions } from "@/components/admin/AdminProductRowActions";
 import Image from "next/image";
+import Form from "next/form";
 import Link from "next/link";
-import { AlertTriangle, Boxes, Plus, Search } from "lucide-react";
-import { Prisma } from "@prisma/client";
+import { Plus } from "lucide-react";
+import type { Prisma } from "@prisma/client";
 import { QikinkStockReport } from "@/components/admin/QikinkStockReport";
 import { QikinkCatalogImport } from "@/components/admin/QikinkCatalogImport";
 import { getVariants } from "@/lib/validations/variants";
 
-interface AdminProductsPageProps {
-  searchParams: Promise<{
-    search?: string;
-    category?: string;
-    page?: string;
-  }>;
-}
+type Filters = { search?: string; category?: string; status?: string; page?: string };
 
-export default async function AdminProductsPage({ searchParams }: AdminProductsPageProps) {
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    redirect("/");
-  }
-
-  const { search, category, page } = await searchParams;
-
-  const currentPage = Math.max(1, parseInt(page || "1", 10));
+export default async function AdminProductsPage({ searchParams }: { searchParams: Promise<Filters> }) {
+  const session = await getRequestSession();
+  if (session?.user.role !== "ADMIN") redirect("/");
+  const params = await searchParams;
+  const search = typeof params.search === "string" ? params.search.trim().slice(0, 120) : "";
+  const category = typeof params.category === "string" && params.category !== "ALL" ? params.category : "";
+  const status = params.status === "live" || params.status === "hidden" ? params.status : "";
+  const currentPage = Math.min(100000, Math.max(1, Math.floor(Number(params.page)) || 1));
   const limit = 10;
-  const skip = (currentPage - 1) * limit;
-
-  const where: Prisma.ProductWhereInput = {};
-  if (search) {
-    where.OR = [
-      { name: { contains: search, mode: "insensitive" } },
-      { slug: { contains: search, mode: "insensitive" } },
-    ];
-  }
-  if (category && category !== "ALL") {
-    where.category = { slug: category };
-  }
-
-  const [products, totalCount, categories] = await Promise.all([
+  const scope: Prisma.ProductWhereInput = {};
+  if (category) scope.category = { slug: category };
+  if (search) scope.OR = [
+    { name: { contains: search, mode: "insensitive" } },
+    { slug: { contains: search, mode: "insensitive" } },
+    { qikinkProductId: { contains: search } },
+  ];
+  const where = status ? { ...scope, isActive: status === "live" } : scope;
+  const [products, counts, categories] = await Promise.all([
     prisma.product.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { createdAt: "desc" },
-      include: {
-        category: {
-          select: { name: true, slug: true },
-        },
-      },
+      where, take: limit, skip: (currentPage - 1) * limit,
+      orderBy: [{ updatedAt: "desc" }, { id: "asc" }],
+      select: { id: true, name: true, price: true, regularPrice: true, isActive: true, images: true,
+        qikinkProductId: true, qikinkVariants: true, description: true, updatedAt: true, category: { select: { name: true } } },
     }),
-    prisma.product.count({ where }),
-    prisma.category.findMany({
-      select: { id: true, name: true, slug: true },
-      orderBy: { name: "asc" },
-    }),
+    prisma.product.groupBy({ by: ["isActive"], where: scope, _count: true }),
+    prisma.category.findMany({ select: { id: true, name: true, slug: true }, orderBy: { name: "asc" } }),
   ]);
-
-  const totalPages = Math.ceil(totalCount / limit);
-
-  return (
-    <div className="space-y-8">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="text-xs font-mono font-bold tracking-widest text-rose-500 uppercase">
-            CATALOG // INVENTORY CONTROL
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight mt-1">
-            Products & Drops
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Manage streetwear silhouettes, pricing, stock levels, and publication status.
-          </p>
-        </div>
-
-        <Link
-          href="/admin/products/new"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-black uppercase tracking-wider transition-all shadow-md shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Product</span>
-        </Link>
-      </div>
-
-      <QikinkCatalogImport categories={categories} />
-      <QikinkStockReport />
-      {/* Filter / Search Bar */}
-      <div className="p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <form className="relative flex-1 w-full sm:max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
-          <input
-            type="text"
-            name="search"
-            defaultValue={search || ""}
-            placeholder="Search drops by title or slug..."
-            className="w-full pl-10 pr-4 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-rose-500"
-          />
-        </form>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar">
-          <Link
-            href="/admin/products"
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors ${
-              !category || category === "ALL"
-                ? "bg-rose-600 text-white"
-                : "bg-zinc-950 text-zinc-400 hover:text-white"
-            }`}
-          >
-            All
-          </Link>
-          {categories.map((c) => (
-            <Link
-              key={c.id}
-              href={`/admin/products?category=${c.slug}`}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors ${
-                category === c.slug
-                  ? "bg-rose-600 text-white"
-                  : "bg-zinc-950 text-zinc-400 hover:text-white"
-              }`}
-            >
-              {c.name}
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* Products Table */}
-      <div className="rounded-3xl bg-zinc-900/40 border border-zinc-800/80 overflow-hidden">
-        {products.length === 0 ? (
-          <div className="p-12 text-center space-y-3">
-            <Boxes className="w-8 h-8 text-zinc-600 mx-auto" />
-            <p className="text-xs text-zinc-400">No products match your query.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-950/80 text-zinc-400 uppercase font-mono tracking-wider border-b border-zinc-800">
-                <tr>
-                  <th className="py-4 px-6">Product</th>
-                  <th className="py-4 px-4">Category</th>
-                  <th className="py-4 px-4">Price</th>
-                  <th className="py-4 px-4">Stock</th>
-                  <th className="py-4 px-4">Status</th>
-                  <th className="py-4 px-6 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
-                {products.map((p) => {
-                  const isLowStock = p.stock < 5;
-                  const variants = getVariants(p.qikinkVariants);
-                  return (
-                    <tr key={p.id} className="hover:bg-zinc-900/40 transition-colors">
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-3">
-                          <div className="relative w-12 h-12 rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden shrink-0">
-                            <Image
-                              src={p.images[0] || "/images/products/placeholder.svg"}
-                              alt={p.name}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <div>
-                            <Link
-                              href={`/admin/products/${p.id}/edit`}
-                              className="font-bold text-white hover:text-rose-400 transition-colors block"
-                            >
-                              {p.name}
-                            </Link>
-                            <span className="font-mono text-[11px] text-zinc-500 block">
-                              /{p.slug}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="py-4 px-4">
-                        <Badge variant="outline" className="text-[10px]">
-                          {p.category.name}
-                        </Badge>
-                      </td>
-
-                      <td className="py-4 px-4 font-mono font-bold text-white">
-                        {formatPrice(p.price)}
-                      </td>
-
-                      <td className="py-4 px-4">
-                        {variants.length ? (
-                          <span>{variants.filter(option => !option.unavailable).length} of {variants.length} variants available</span>
-                        ) : isLowStock ? (
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-950/80 border border-amber-800/60 text-amber-400 font-mono font-bold">
-                            <AlertTriangle className="w-3 h-3" />
-                            <span>{p.stock} Units</span>
-                          </div>
-                        ) : (
-                          <span className="font-mono text-zinc-300 font-bold">
-                            {p.stock}
-                          </span>
-                        )}
-                      </td>
-
-                      <td className="py-4 px-4">
-                        <Badge
-                          variant={p.isActive ? "success" : "secondary"}
-                          className="text-[10px]"
-                        >
-                          {p.isActive ? "Active" : "Archived"}
-                        </Badge>
-                      </td>
-
-                      <td className="py-4 px-6 text-right">
-                        <AdminProductRowActions
-                          productId={p.id}
-                          productName={p.name}
-                          isActive={p.isActive}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="p-4 border-t border-zinc-800/60 flex items-center justify-between text-xs text-zinc-400 font-mono">
-            <span>
-              Showing Page {currentPage} of {totalPages} ({totalCount} items)
-            </span>
-            <div className="flex items-center gap-2">
-              {currentPage > 1 && (
-                <Link
-                  href={`/admin/products?page=${currentPage - 1}${search ? `&search=${search}` : ""}${category ? `&category=${category}` : ""}`}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-zinc-200 transition-colors"
-                >
-                  &larr; Prev
-                </Link>
-              )}
-              {currentPage < totalPages && (
-                <Link
-                  href={`/admin/products?page=${currentPage + 1}${search ? `&search=${search}` : ""}${category ? `&category=${category}` : ""}`}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-zinc-200 transition-colors"
-                >
-                  Next &rarr;
-                </Link>
-              )}
+  const live = counts.find(row => row.isActive)?._count ?? 0;
+  const hidden = counts.find(row => !row.isActive)?._count ?? 0;
+  const total = status === "live" ? live : status === "hidden" ? hidden : live + hidden;
+  const pages = Math.max(1, Math.ceil(total / limit));
+  function listUrl(nextStatus: string, page = 1) {
+    const query = new URLSearchParams();
+    if (search) query.set("search", search);
+    if (category) query.set("category", category);
+    if (nextStatus) query.set("status", nextStatus);
+    if (page > 1) query.set("page", String(page));
+    return "/admin/products" + (query.size ? "?" + query.toString() : "");
+  }
+  if (currentPage > pages) redirect(listUrl(status, pages));
+  const inputStyle = "min-h-10 rounded-lg border border-zinc-700 bg-zinc-950 px-3 text-sm";
+  return <div className="space-y-6">
+    <header className="flex flex-wrap items-center justify-between gap-3">
+      <h1 className="text-3xl font-bold">Products</h1>
+      <Link className="flex items-center gap-2 rounded-lg bg-[#fff0dc] px-4 py-2.5 text-sm font-bold text-[#431017]" href="/admin/products/new"><Plus size={16} />New product</Link>
+    </header>
+    <div className="grid gap-2 xl:grid-cols-2"><QikinkCatalogImport categories={categories} /><QikinkStockReport /></div>
+    <Form key={listUrl(status)} className="flex flex-wrap items-end gap-3" action="/admin/products">
+      {status && <input type="hidden" name="status" value={status} />}
+      <label className="grid min-w-0 flex-1 gap-1 text-xs text-zinc-300">Search products
+        <input type="search" name="search" defaultValue={search} placeholder="Name, slug or Qikink ID" className={inputStyle} />
+      </label>
+      <label className="grid gap-1 text-xs text-zinc-300">Category
+        <select name="category" defaultValue={category} className={inputStyle}>
+          <option value="">All categories</option>{categories.map(c => <option key={c.id} value={c.slug}>{c.name}</option>)}
+        </select>
+      </label>
+      <button className={inputStyle}>Apply</button>
+      {(search || category || status) && <Link href="/admin/products" className="py-2 text-sm underline">Clear filters</Link>}
+    </Form>
+    <nav aria-label="Publication status" className="flex flex-wrap gap-2">
+      {([["", "All", live + hidden], ["live", "Live", live], ["hidden", "Unpublished", hidden]] as const).map(([value, name, count]) =>
+        <Link key={name} href={listUrl(value)} aria-current={status === value ? "page" : undefined}
+          className={`rounded-lg px-3 py-2 text-sm ${status === value ? "bg-[#fff0dc] text-[#431017]" : "bg-zinc-900 text-zinc-300"}`}>{name} · {count}</Link>
+      )}
+    </nav>
+    <div className="space-y-3">
+      {!products.length && <p className="py-8 text-zinc-400">No products match these filters.</p>}
+      {products.map(p => {
+        const options = getVariants(p.qikinkVariants);
+        const missing = [!p.images.length && "photo", p.description.trim().length < 10 && "description", !p.price && "price", !options.length && "Store SKUs"].filter(Boolean);
+        return <article key={p.id} className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 sm:p-5">
+          <div className="flex items-start gap-4">
+            <div className="relative size-16 shrink-0 overflow-hidden rounded-lg bg-zinc-800">
+              <Image alt="" fill sizes="64px" className="object-cover" src={p.images[0] || "/images/products/placeholder.svg"} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <Link href={`/admin/products/${p.id}/edit`} className="break-words text-lg font-semibold hover:underline">{p.name}</Link>
+                <span className={p.isActive ? "text-sm text-emerald-300" : "text-sm text-zinc-400"}>{p.isActive ? "Live" : "Unpublished"}</span>
+              </div>
+              <p className="text-sm text-zinc-400">{p.category.name}{p.qikinkProductId && ` · Qikink #${p.qikinkProductId}`}</p>
+              <p className="mt-1 font-semibold">{p.price ? formatPrice(p.price) : "Price needed"} {p.regularPrice && <del className="text-sm font-normal text-zinc-400">{formatPrice(p.regularPrice)}</del>}</p>
             </div>
           </div>
-        )}
-      </div>
+          <p className="mt-3 text-sm text-zinc-300">{options.filter(v => !v.unavailable).length} of {options.length} variants available · {p.images.length} {p.images.length === 1 ? "photo" : "photos"}</p>
+          {missing.length > 0 && <p className="mt-1 text-sm text-amber-300">Missing {missing.join(", ")}</p>}
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-800 pt-3">
+            <AdminProductRowActions productId={p.id} productName={p.name} isActive={p.isActive} />
+            <small className="text-zinc-400">Updated {p.updatedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" })}</small>
+          </div>
+        </article>;
+      })}
     </div>
-  );
+    {pages > 1 && <nav aria-label="Product pages" className="flex items-center justify-between gap-3 text-sm">
+      {currentPage > 1 ? <Link href={listUrl(status, currentPage - 1)}>← Previous</Link> : <span />}
+      <span>Page {currentPage} of {pages}</span>
+      {currentPage < pages ? <Link href={listUrl(status, currentPage + 1)}>Next →</Link> : <span />}
+    </nav>}
+  </div>;
 }

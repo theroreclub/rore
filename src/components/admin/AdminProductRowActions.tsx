@@ -1,115 +1,64 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { Edit2, Eye, EyeOff, Trash2, Loader2, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Pencil, Trash2 } from "lucide-react";
 import { toggleProductActive, deleteProduct } from "@/app/actions/admin-products";
 
-interface AdminProductRowActionsProps {
-  productId: string;
-  productName: string;
-  isActive: boolean;
-}
+export function AdminProductRowActions({ productId, productName, isActive, editor = false }: {
+  productId: string; productName: string; isActive: boolean; editor?: boolean;
+}) {
+  const router = useRouter();
+  const dialog = useRef<HTMLDialogElement>(null);
+  const [pending, start] = useTransition();
+  const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
+  const actionStyle = "inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-zinc-700 px-3 text-sm font-semibold hover:bg-zinc-800";
 
-export function AdminProductRowActions({
-  productId,
-  productName,
-  isActive,
-}: AdminProductRowActionsProps) {
-  const [isPending, startTransition] = useTransition();
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [notice, setNotice] = useState<string | null>(null);
-
-  const handleToggle = () => {
-    startTransition(async () => {
-      const res = await toggleProductActive(productId, isActive);
-      if (!res.success) {
-        alert(res.error || "Failed to update status");
-      }
+  function remove() {
+    start(async () => {
+      try {
+        const result = await deleteProduct(productId);
+        if (!result.success) { setError(result.error || "Could not delete this product."); return; }
+        dialog.current?.close();
+        if (editor) router.replace("/admin/products");
+        else setNotice(result.softDeleted ? "Hidden from the shop. Order history is preserved." : "Product deleted.");
+      } catch { setError("Could not delete the product. Please try again."); }
     });
-  };
+  }
 
-  const handleDelete = () => {
-    startTransition(async () => {
-      const res = await deleteProduct(productId);
-      if (!res.success) {
-        alert(res.error || "Failed to delete product");
-      } else {
-        setNotice(res.message || "Done");
-        setTimeout(() => {
-          setNotice(null);
-          setShowConfirm(false);
-        }, 3000);
-      }
+  function changeVisibility() {
+    setNotice("");
+    start(async () => {
+      try {
+        const result = await toggleProductActive(productId, isActive);
+        setNotice(result.success ? (isActive ? "Hidden from the shop." : "Published to the shop.") : result.error || "Could not change visibility.");
+      } catch { setNotice("Could not change visibility. Please try again."); }
     });
-  };
+  }
 
   return (
-    <div className="flex items-center justify-end gap-2 relative">
-      {notice && (
-        <div className="absolute right-0 -top-8 z-20 flex items-center gap-1.5 px-3 py-1 rounded-lg bg-zinc-950 border border-zinc-700 text-xs text-rose-400 shadow-xl whitespace-nowrap">
-          <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
-          <span>{notice}</span>
+    <div>
+      <div className="flex flex-wrap gap-2">
+        {!editor && <>
+          <Link href={`/admin/products/${productId}/edit`} className={actionStyle}><Pencil size={14} />Edit</Link>
+          <button type="button" className={actionStyle} disabled={pending} onClick={changeVisibility}>{isActive ? "Hide" : "Publish"}</button>
+        </>}
+        <button type="button" disabled={pending} aria-haspopup="dialog" className={actionStyle + " text-rose-300"}
+          onClick={() => { setError(""); dialog.current?.showModal(); }}><Trash2 size={15} />Delete product</button>
+      </div>
+      {notice && <p role="status" className="mt-2 text-sm">{notice}</p>}
+      <dialog ref={dialog} aria-label={`Delete ${productName}`} onCancel={event => { if (pending) event.preventDefault(); }}
+        className="fixed inset-0 m-auto w-full max-w-[min(28rem,90vw)] rounded-2xl border border-zinc-700 bg-zinc-950 p-6 text-left text-zinc-100 backdrop:bg-black/70">
+        <h2 className="text-xl font-semibold">Delete {productName}?</h2>
+        <p className="my-4 text-sm leading-relaxed text-zinc-300">Products with past orders are hidden from the shop so receipts stay available. Products without orders are permanently deleted from RORE CLUB.</p>
+        {error && <p role="alert" className="mb-3 text-sm text-rose-300">{error}</p>}
+        <div className="flex flex-wrap justify-end gap-2">
+          <button type="button" autoFocus disabled={pending} className={actionStyle} onClick={() => dialog.current?.close()}>Cancel</button>
+          <button type="button" disabled={pending} onClick={remove} className="min-h-10 rounded-lg bg-rose-700 px-3 text-sm font-semibold text-white">{pending ? "Removing…" : "Confirm deletion"}</button>
         </div>
-      )}
-
-      {/* Edit Link */}
-      <Link
-        href={`/admin/products/${productId}/edit`}
-        className="p-1.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
-        title="Edit product"
-      >
-        <Edit2 className="w-4 h-4" />
-      </Link>
-
-      {/* Visibility Toggle */}
-      <button
-        onClick={handleToggle}
-        disabled={isPending}
-        className={`p-1.5 rounded-lg border transition-colors ${
-          isActive
-            ? "bg-zinc-950 border-zinc-800 text-emerald-400 hover:border-emerald-700/50"
-            : "bg-zinc-950 border-zinc-800 text-zinc-500 hover:text-zinc-300"
-        }`}
-        title={isActive ? "Archive product (hide from store)" : "Activate product (show in store)"}
-      >
-        {isPending ? (
-          <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />
-        ) : isActive ? (
-          <Eye className="w-4 h-4" />
-        ) : (
-          <EyeOff className="w-4 h-4" />
-        )}
-      </button>
-
-      {/* Delete / Confirm Button */}
-      {showConfirm ? (
-        <div className="flex items-center gap-1 bg-zinc-950 border border-rose-900/60 p-1 rounded-xl shadow-lg">
-          <button
-            onClick={handleDelete}
-            disabled={isPending}
-            className="px-2 py-1 rounded-lg bg-rose-600 hover:bg-rose-800 text-white font-bold text-[11px] uppercase transition-colors"
-          >
-            {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Confirm"}
-          </button>
-          <button
-            onClick={() => setShowConfirm(false)}
-            disabled={isPending}
-            className="px-2 py-1 rounded-lg text-zinc-400 hover:text-white text-[11px] transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => setShowConfirm(true)}
-          disabled={isPending}
-          className="p-1.5 rounded-lg bg-zinc-950 hover:bg-rose-950/40 border border-zinc-800 hover:border-rose-800/40 text-zinc-400 hover:text-rose-400 transition-colors"
-          title={`Delete ${productName}`}
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      )}
+      </dialog>
     </div>
   );
 }

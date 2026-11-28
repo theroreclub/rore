@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { getRequestSession } from "@/lib/auth-checks";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -16,7 +16,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const session = await getRequestSession();
 
   if (!session?.user) {
     redirect("/login?callbackUrl=/admin");
@@ -31,7 +31,7 @@ export default async function AdminLayout({
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-zinc-800/80 bg-zinc-950/90 flex flex-col shrink-0">
         {/* Brand Header */}
-        <div className="p-6 border-b border-zinc-800/60 flex items-center justify-between">
+        <div className="hidden md:flex p-6 border-b border-zinc-800/60 items-center justify-between">
           <Link href="/admin" className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-rose-950/40">
               <Shield className="w-4 h-4" />
@@ -48,7 +48,7 @@ export default async function AdminLayout({
         </div>
 
         {/* Navigation Links */}
-        <nav className="p-4 space-y-1.5 flex-1">
+        <nav className="grid grid-cols-2 gap-1 p-2 sm:grid-cols-4 md:block md:space-y-1.5 md:p-4 md:flex-1">
           <Link
             href="/admin"
             className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-zinc-300 hover:text-white hover:bg-zinc-900/80 transition-colors"
@@ -83,7 +83,7 @@ export default async function AdminLayout({
         </nav>
 
         {/* Storefront Link & Admin Info */}
-        <div className="p-4 border-t border-zinc-800/60 space-y-3">
+        <div className="hidden md:block p-4 border-t border-zinc-800/60 space-y-3">
           <Link
             href="/"
             className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-xs font-bold text-zinc-300 uppercase tracking-wider transition-colors"
@@ -105,7 +105,7 @@ export default async function AdminLayout({
       </aside>
 
       {/* Main Admin Workspace */}
-      <main className="flex-1 p-6 sm:p-8 lg:p-10 max-w-7xl w-full mx-auto overflow-x-hidden">
+      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-10 max-w-7xl w-full mx-auto overflow-x-hidden">
         {children}
       </main>
     </div>

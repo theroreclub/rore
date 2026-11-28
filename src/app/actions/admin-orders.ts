@@ -1,5 +1,6 @@
 "use server";
 
+import { getAvailableVariants } from "@/lib/validations/variants";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/auth-checks";
 import { OrderStatus, Prisma } from "@prisma/client";
@@ -223,60 +224,25 @@ export async function updateOrderStatus(orderId: string, nextStatus: OrderStatus
 export async function getAdminDashboardMetrics() {
   await requireAdminSession();
 
-  const [totalOrders, revenueAggregate, pendingShipments, lowStockCount, recentOrders, lowStockProducts] =
-    await Promise.all([
-      prisma.order.count(),
-      prisma.order.aggregate({
-        where: {
-          status: {
-            in: [OrderStatus.PAID, OrderStatus.SHIPPED, OrderStatus.DELIVERED],
-          },
-        },
-        _sum: {
-          total: true,
-        },
-      }),
-      prisma.order.count({
-        where: { status: OrderStatus.PAID },
-      }),
-      prisma.product.count({
-        where: {
-          stock: { lt: 5 },
-          isActive: true,
-        },
-      }),
-      prisma.order.findMany({
-        take: 5,
-        orderBy: { createdAt: "desc" },
-        include: {
-          user: {
-            select: { name: true, email: true },
-          },
-        },
-      }),
-      prisma.product.findMany({
-        where: {
-          stock: { lt: 5 },
-          isActive: true,
-        },
-        take: 5,
-        orderBy: { stock: "asc" },
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          stock: true,
-          price: true,
-        },
-      }),
-    ]);
-
+  const [totals, recentOrders, inventory] = await Promise.all([
+    prisma.order.groupBy({ by: ["status"], _count: true, _sum: { total: true } }),
+    prisma.order.findMany({
+      take: 5, orderBy: { createdAt: "desc" },
+      select: { id: true, total: true, status: true, user: { select: { name: true, email: true } } },
+    }),
+    prisma.product.findMany({
+      where: { isActive: true }, orderBy: { updatedAt: "desc" },
+      select: { id: true, name: true, price: true, qikinkVariants: true },
+    }),
+  ]);
+  const unavailable = inventory.filter(product => !getAvailableVariants(product.qikinkVariants).length);
   return {
-    totalOrders,
-    totalRevenue: revenueAggregate._sum.total || 0,
-    pendingShipments,
-    lowStockCount,
+    totalOrders: totals.reduce((sum, group) => sum + group._count, 0),
+    totalRevenue: totals.filter(group => group.status === "PAID" || group.status === "SHIPPED" || group.status === "DELIVERED")
+      .reduce((sum, group) => sum + (group._sum.total ?? 0), 0),
+    pendingShipments: totals.find(group => group.status === "PAID")?._count ?? 0,
+    unavailableCount: unavailable.length,
     recentOrders,
-    lowStockProducts,
+    unavailableProducts: unavailable.slice(0, 5).map(({ id, name, price }) => ({ id, name, price })),
   };
 }

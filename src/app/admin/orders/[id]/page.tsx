@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { getRequestSession } from "@/lib/auth-checks";
 import { notFound, redirect } from "next/navigation";
 import { getAdminOrderById } from "@/app/actions/admin-orders";
 import { formatPrice } from "@/lib/utils";
@@ -24,7 +24,7 @@ function parseAddressSafely(addressStr: string) {
 }
 
 export default async function AdminOrderDetailPage({ params }: AdminOrderDetailPageProps) {
-  const session = await auth();
+  const session = await getRequestSession();
   if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/");
   }

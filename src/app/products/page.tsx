@@ -1,12 +1,9 @@
+import { publicProducts, publicCategories } from "@/lib/public-catalog";
 import { Suspense } from "react";
-import { prisma } from "@/lib/prisma";
 import { productSearchParamsSchema } from "@/lib/validations/product";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { WishlistGrid } from "@/components/products/WishlistGrid";
 import { ProductFilter } from "@/components/products/ProductFilter";
-import { Prisma } from "@prisma/client";
-import { previewCategories, previewProducts } from "@/lib/preview-catalog";
-import { getAvailableVariants } from "@/lib/validations/variants";
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -27,76 +24,15 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     : { category: undefined, search: undefined };
   const sort = rawParams.sort === "price_asc" || rawParams.sort === "price_desc"
     ? rawParams.sort : "newest";
-  const priceSort = sort === "price_asc" ? "asc" : "desc";
-
-  // Build the Prisma where condition
-  const where: Prisma.ProductWhereInput = {
-    isActive: true,
-  };
-
-  if (category) {
-    where.category = {
-      slug: category,
-    };
-  }
-
-  if (search) {
-    where.OR = [
-      { name: { contains: search, mode: "insensitive" } },
-      { description: { contains: search, mode: "insensitive" } },
-    ];
-  }
-
-  let products: Array<{
-    id: string;
-    name: string;
-    slug: string;
-    description?: string | null;
-    price: number;
-    regularPrice?: number | null;
-    stock: number;
-    images: string[];
-    category: { name: string; slug: string } | null;
-  }> = [];
-
-  let categories: Array<{
-    id: string;
-    name: string;
-    slug: string;
-  }> = [];
-
-  try {
-    if (!process.env.DATABASE_URL) {
-      products = previewProducts.filter((product) =>
-        (!category || product.category.slug === category) &&
-        (!search || `${product.name} ${product.description}`.toLowerCase().includes(search.toLowerCase()))
-      );
-      if (sort !== "newest") {
-        products.sort((a, b) => priceSort === "asc" ? a.price - b.price : b.price - a.price);
-      }
-      categories = previewCategories;
-    } else {
-      const [fetchedProducts, fetchedCategories] = await Promise.all([
-        prisma.product.findMany({
-          where,
-          orderBy: sort === "newest" ? { createdAt: "desc" } : [{ price: priceSort }, { name: "asc" }],
-          include: {
-            category: { select: { name: true, slug: true } },
-          },
-        }),
-        prisma.category.findMany({
-          select: { id: true, name: true, slug: true },
-          orderBy: { name: "asc" },
-        }),
-      ]);
-
-      products = fetchedProducts.map((product) => ({
-        ...product, stock: getAvailableVariants(product.qikinkVariants).length ? 20 : 0,
-      }));
-      categories = fetchedCategories;
-    }
-  } catch (error) {
-    console.error("Failed to query products from database:", error);
+  const [catalog, categories] = await Promise.all([publicProducts(), publicCategories()]);
+  const term = search?.toLowerCase();
+  const products = catalog.filter(product =>
+    (!category || category === product.category.slug) &&
+    (!term || product.name.toLowerCase().includes(term) || product.description.toLowerCase().includes(term))
+  );
+  if (sort !== "newest") {
+    const direction = sort === "price_asc" ? 1 : -1;
+    products.sort((a, b) => direction * (a.price - b.price) || a.name.localeCompare(b.name));
   }
 
   // Active Category Name for title

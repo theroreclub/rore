@@ -1,10 +1,10 @@
-import { auth } from "@/auth";
+import { getRequestSession } from "@/lib/auth-checks";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 
 export default async function AdminCategoriesPage() {
-  const session = await auth();
+  const session = await getRequestSession();
   if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/");
   }

@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { getRequestSession } from "@/lib/auth-checks";
 import { redirect } from "next/navigation";
 import { getAdminDashboardMetrics } from "@/app/actions/admin-orders";
 import { formatPrice } from "@/lib/utils";
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
-  const session = await auth();
+  const session = await getRequestSession();
   if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/");
   }
@@ -24,9 +24,9 @@ export default async function AdminDashboardPage() {
     totalOrders,
     totalRevenue,
     pendingShipments,
-    lowStockCount,
+    unavailableCount,
     recentOrders,
-    lowStockProducts,
+    unavailableProducts,
   } = await getAdminDashboardMetrics();
 
   return (
@@ -110,14 +110,14 @@ export default async function AdminDashboardPage() {
         <div className="p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 relative overflow-hidden group hover:border-zinc-700 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400">
-              Low Stock Alerts
+              Unavailable products
             </span>
             <div className="p-2 rounded-xl bg-rose-950/60 border border-rose-800/60 text-rose-400">
               <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black font-mono text-white">{lowStockCount}</div>
-          <p className="text-[11px] text-zinc-500 mt-1 font-mono">Drops with stock below 5</p>
+          <div className="text-2xl font-black font-mono text-white">{unavailableCount}</div>
+          <p className="text-[11px] text-zinc-500 mt-1 font-mono">Live products with no available variants</p>
         </div>
       </div>
 
@@ -212,7 +212,7 @@ export default async function AdminDashboardPage() {
             <div className="flex items-center gap-2">
               <Package className="w-4 h-4 text-amber-500" />
               <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
-                Low Stock Drops
+                Unavailable products
               </h3>
             </div>
             <Link
@@ -223,13 +223,13 @@ export default async function AdminDashboardPage() {
             </Link>
           </div>
 
-          {lowStockProducts.length === 0 ? (
+          {unavailableProducts.length === 0 ? (
             <div className="p-8 text-center text-xs text-zinc-500 font-mono">
-              All active products are adequately stocked.
+              All live products have an available variant.
             </div>
           ) : (
             <div className="space-y-3">
-              {lowStockProducts.map((p) => (
+              {unavailableProducts.map((p) => (
                 <div
                   key={p.id}
                   className="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between gap-3"
@@ -249,7 +249,7 @@ export default async function AdminDashboardPage() {
                   <div className="shrink-0 text-right">
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-950/60 border border-amber-800/60 text-amber-400 font-mono text-xs font-bold">
                       <AlertTriangle className="w-3 h-3" />
-                      <span>{p.stock} left</span>
+                      <span>Unavailable</span>
                     </span>
                   </div>
                 </div>

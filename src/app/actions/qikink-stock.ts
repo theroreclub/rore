@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { catalogTag } from "@/lib/public-catalog";
 import { requireAdminSession } from "@/lib/auth-checks";
 import { prisma } from "@/lib/prisma";
 import { getVariants } from "@/lib/validations/variants";
@@ -36,6 +37,7 @@ export async function applyStockReport(_previous: string, data: FormData): Promi
       }
       return { mapped, held, changed };
     }, { isolationLevel: "Serializable", timeout: 30000 });
+    updateTag(catalogTag);
     revalidatePath("/", "layout");
     return `Checked ${result.mapped} mapped variants. ${result.held} unavailable. ${result.changed} changed.`;
   } catch {

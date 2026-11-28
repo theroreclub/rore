@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { getRequestSession } from "@/lib/auth-checks";
 import { redirect } from "next/navigation";
 import { getAdminOrders } from "@/app/actions/admin-orders";
 import { formatPrice } from "@/lib/utils";
@@ -49,7 +49,7 @@ function getStatusBadge(status: OrderStatus) {
 }
 
 export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageProps) {
-  const session = await auth();
+  const session = await getRequestSession();
   if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/");
   }

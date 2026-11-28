@@ -1,4 +1,5 @@
-import { auth } from "@/auth";
+import { AdminProductRowActions } from "@/components/admin/AdminProductRowActions";
+import { getRequestSession } from "@/lib/auth-checks";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ProductForm } from "@/components/admin/ProductForm";
@@ -10,7 +11,7 @@ interface EditProductPageProps {
 }
 
 export default async function EditProductPage({ params }: EditProductPageProps) {
-  const session = await auth();
+  const session = await getRequestSession();
   if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/");
   }
@@ -58,6 +59,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
         </p>
       </div>
 
+      <AdminProductRowActions productId={product.id} productName={product.name} isActive={product.isActive} editor />
       <ProductForm categories={categories} initialData={product} />
     </div>
   );

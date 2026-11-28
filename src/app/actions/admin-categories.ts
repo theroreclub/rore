@@ -3,7 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/auth-checks";
 import { adminCategorySchema, AdminCategoryInput } from "@/lib/validations/admin-category";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { catalogTag } from "@/lib/public-catalog";
 
 /**
  * Returns categories with their product count.
@@ -60,6 +61,7 @@ export async function createCategory(input: AdminCategoryInput) {
 
     revalidatePath("/admin/categories");
     revalidatePath("/admin/products");
+    updateTag(catalogTag);
     revalidatePath("/products");
     revalidatePath("/");
 
@@ -113,6 +115,7 @@ export async function updateCategory(id: string, input: AdminCategoryInput) {
 
     revalidatePath("/admin/categories");
     revalidatePath("/admin/products");
+    updateTag(catalogTag);
     revalidatePath("/products");
     revalidatePath("/");
 
@@ -148,6 +151,7 @@ export async function deleteCategory(id: string) {
 
     revalidatePath("/admin/categories");
     revalidatePath("/admin/products");
+    updateTag(catalogTag);
     revalidatePath("/products");
     revalidatePath("/");
 

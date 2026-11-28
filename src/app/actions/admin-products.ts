@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/auth-checks";
 import { adminProductSchema, AdminProductInput } from "@/lib/validations/admin-product";
 import { rupeesToPaise } from "@/lib/utils";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { catalogTag } from "@/lib/public-catalog";
 import { Prisma } from "@prisma/client";
 import { getVariants } from "@/lib/validations/variants";
 
@@ -113,6 +114,7 @@ export async function createProduct(input: AdminProductInput) {
       },
     });
 
+    updateTag(catalogTag);
     revalidatePath("/products");
     revalidatePath("/admin/products");
 
@@ -180,6 +182,7 @@ export async function updateProduct(id: string, input: AdminProductInput) {
       },
     });
 
+    updateTag(catalogTag);
     revalidatePath("/products");
     revalidatePath(`/products/${slug}`);
     revalidatePath("/admin/products");
@@ -212,6 +215,7 @@ export async function deleteProduct(id: string) {
         data: { isActive: false },
       });
 
+      updateTag(catalogTag);
       revalidatePath("/products");
       revalidatePath("/admin/products");
 
@@ -228,6 +232,7 @@ export async function deleteProduct(id: string) {
       where: { id },
     });
 
+    updateTag(catalogTag);
     revalidatePath("/products");
     revalidatePath("/admin/products");
 
@@ -263,6 +268,7 @@ export async function toggleProductActive(id: string, currentStatus: boolean) {
       data: { isActive: !currentStatus },
     });
 
+    updateTag(catalogTag);
     revalidatePath("/products");
     revalidatePath("/admin/products");
 
