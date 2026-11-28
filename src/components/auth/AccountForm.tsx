@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -11,6 +11,7 @@ import { returnPath } from "@/lib/return-path";
 export function AccountForm({ signup = false }: { signup?: boolean }) {
   const params = useSearchParams();
   const router = useRouter();
+  const passwordId = useId();
   const destination = returnPath(params.get("callbackUrl"));
   const next = destination === "/" ? "" : "?callbackUrl=" + encodeURIComponent(destination);
   const [visible, setVisible] = useState(false);
@@ -35,8 +36,8 @@ export function AccountForm({ signup = false }: { signup?: boolean }) {
       } else {
         const result = await signIn("credentials", { email, password, redirect: false });
         if (!result || result.error) { setError("Check your email and password and try again."); setPending(false); return; }
-        router.replace(destination);
-        router.refresh();
+        // Enter the protected route with the new session cookie and a fresh route cache.
+        window.location.replace(destination);
       }
     } catch { setError("Couldn’t connect. Please try again."); setPending(false); }
   }
@@ -47,10 +48,10 @@ export function AccountForm({ signup = false }: { signup?: boolean }) {
     <form onSubmit={submit} aria-busy={pending}>
       {signup && <label>Full name<input name="name" autoComplete="name" required minLength={2} maxLength={50} /></label>}
       <label>Email address<input name="email" type="email" autoComplete="email" autoCapitalize="none" required /></label>
-      <div><label htmlFor="account-password">Password</label><div className="account-password">
-        <input id="account-password" name="password" type={visible ? "text" : "password"} autoComplete={signup ? "new-password" : "current-password"} required minLength={signup ? 8 : undefined} maxLength={signup ? 100 : undefined} aria-describedby={signup ? "password-hint" : undefined}/>
+      <div><label htmlFor={passwordId}>Password</label><div className="account-password">
+        <input id={passwordId} name="password" type={visible ? "text" : "password"} autoComplete={signup ? "new-password" : "current-password"} required minLength={signup ? 8 : undefined} maxLength={signup ? 100 : undefined} aria-describedby={signup ? passwordId + "-hint" : undefined}/>
         <button type="button" aria-label={visible ? "Hide password" : "Show password"} aria-pressed={visible} onClick={() => setVisible(!visible)}>{visible ? "Hide" : "Show"}</button></div>
-        {signup && <small id="password-hint">Use at least 8 characters.</small>}
+        {signup && <small id={passwordId + "-hint"}>Use at least 8 characters.</small>}
       </div>
       {signup && <label>Confirm password<input type={visible ? "text" : "password"} name="confirmPassword" autoComplete="new-password" required /></label>}
       {error && <p role="alert" className="account-alert">{error}</p>}

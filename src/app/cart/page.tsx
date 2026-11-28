@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/utils";
 import { calculateShippingFee } from "@/config/shipping";
 import { ArrowLeft, ArrowRight, Minus, Plus, ShieldCheck, ShoppingBag, Trash2, Truck } from "lucide-react";
+
+function CheckoutNotice() {
+  const params = useSearchParams();
+  return params.get("error") === "item_unavailable"
+    ? <p className="py-2 text-sm" role="alert">An item or size in your bag is no longer available in the quantity selected. Update your bag to continue.</p>
+    : null;
+}
 
 export default function CartPage() {
   const { items, itemCount, subtotal, updateQuantity, removeItem, isLoading } = useCart();
@@ -21,7 +29,9 @@ export default function CartPage() {
     } catch { setNotice({ text: "Couldn’t update your bag. Please try again.", error: true }); }
     finally { setPending(false); }
   }
-  const feedback = notice.text && <p className="py-2 text-sm" role={notice.error ? "alert" : "status"}>{notice.text}</p>;
+  const feedback = notice.text
+    ? <p className="py-2 text-sm" role={notice.error ? "alert" : "status"}>{notice.text}</p>
+    : <Suspense fallback={null}><CheckoutNotice /></Suspense>;
   const shippingFee = calculateShippingFee(subtotal);
   const isPreview = items.some((item) => item.productId.startsWith("preview-"));
 
