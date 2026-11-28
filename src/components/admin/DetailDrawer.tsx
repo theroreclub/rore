@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { X } from "lucide-react";
 
 export function DetailDrawer({ trigger, title, section, className = "admin-button", children }: {
@@ -9,6 +9,10 @@ export function DetailDrawer({ trigger, title, section, className = "admin-butto
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const [opened, setOpened] = useState(false);
+  useEffect(() => {
+    const panel = dialog.current;
+    return () => panel?.close();
+  }, []);
   return <>
     <button type="button" className={className} aria-haspopup="dialog" onClick={() => { setOpened(true); dialog.current?.showModal(); }}>{trigger}</button>
     <dialog ref={dialog} aria-labelledby={titleId} className="admin-drawer" onClick={event => {

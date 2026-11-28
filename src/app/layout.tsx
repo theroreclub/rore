@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Barlow_Condensed, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { StorefrontOnly } from "@/components/layout/StorefrontOnly";
 import { Providers } from "@/components/providers/Providers";
 
 const geistSans = Geist({
@@ -39,9 +41,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <Providers>
           <div className="relative z-10 flex min-h-screen flex-col">
-            <Header />
+            <Suspense fallback={null}><StorefrontOnly><Header /></StorefrontOnly></Suspense>
             <main className="flex-1">{children}</main>
-            <Footer />
+            <Suspense fallback={null}><StorefrontOnly><Footer /></StorefrontOnly></Suspense>
           </div>
         </Providers>
       </body>
